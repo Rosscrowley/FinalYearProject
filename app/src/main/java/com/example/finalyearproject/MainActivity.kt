@@ -9,17 +9,20 @@ import android.speech.SpeechRecognizer
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private val RQ_SPEECH_REC = 102
-
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val btn = findViewById<Button>(R.id.button2)
+        bottomNavigationView = findViewById(R.id.bottom_navigation_view)
+
 
         btn.setOnClickListener {
 
