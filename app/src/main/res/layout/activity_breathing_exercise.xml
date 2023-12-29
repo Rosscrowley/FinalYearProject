@@ -1,0 +1,70 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Custom view for the animated circle -->
+    <com.example.finalyearproject.BreathingExerciseView
+        android:id="@+id/breathingView"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true" />
+
+    <!-- Text view for displaying instructions like 'Breathe In', 'Hold', 'Breathe Out' -->
+    <TextView
+        android:id="@+id/instructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Breathe In"
+        android:textSize="24sp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/breathingView"
+        android:layout_marginTop="24dp"/>
+
+    <!-- Control buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/instructionText"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
+
+        <!-- Play Button -->
+        <ImageButton
+            android:id="@+id/playButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_image"
+            android:onClick="onPlayButtonClick" />
+
+        <!-- Pause Button -->
+        <ImageButton
+            android:id="@+id/pauseButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/pause_image"
+            android:onClick="onPauseButtonClick"
+            android:layout_marginStart="16dp"/>
+
+        <!-- Restart Button -->
+        <ImageButton
+            android:id="@+id/restartButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/replay_image"
+            android:onClick="onRestartButtonClick"
+            android:layout_marginStart="16dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/countdownText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:text="00:00"
+        android:padding="16dp"></TextView>
+
+</RelativeLayout>
