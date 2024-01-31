@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/holo_blue_light">
+
+  <TextView
+        android:id="@+id/countdownTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:padding="8dp"
+        android:text="00:30"
+        android:textSize="18sp"
+        android:textColor="@android:color/white" />
+
+  <TextView
+        android:id="@+id/progressIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/countdownTimer"
+        android:layout_centerHorizontal="true"
+        android:text="Cheek And Jaw 2/5"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        android:padding="8dp" />
+
+   <ImageView
+        android:id="@+id/animatedVisual"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progressIndicator"
+        android:layout_centerHorizontal="true" />
+
+  <TextView
+        android:id="@+id/instructionText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/animatedVisual"
+        android:layout_centerHorizontal="true"
+        android:text="STRESS"
+        android:textSize="30sp"
+        android:textColor="@android:color/holo_red_dark"
+        android:padding="8dp" />
+
+
+</RelativeLayout>

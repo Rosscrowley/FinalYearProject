@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 
 class ChooseReadingTopicActivity : AppCompatActivity() {
 
@@ -16,7 +17,7 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
     }
 
     private lateinit var topicsRecyclerView: RecyclerView
-    private val topics = listOf("Science", "Food", "history", "Economics", "Entrepreneurship", "Psychology", "Self Help", "Spirituality", "Technology")
+    private var topics = listOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,23 +25,42 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
 
         topicsRecyclerView = findViewById(R.id.topicsRecyclerView)
         topicsRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        val closeButton: ImageButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            val intent = Intent(this@ChooseReadingTopicActivity, ExercisesActivity::class.java)
+            startActivity(intent)
+        }
+
+        fetchUserAgeCategoryAndUpdateTopics()
+    }
+
+    private fun fetchUserAgeCategoryAndUpdateTopics() {
+        val userId = getCurrentUserId()
+
+        if (userId != null) {
+            UserAgeUtil.getUserAgeCategory(userId) { category ->
+                // Update topics list based on age category
+                topics = if (category == "Kids Topics") {
+                    listOf("Animals", "Space", "Fairy Tales", "Nature") // Example kids topics
+                } else {
+                    listOf("Science", "Food", "History", "sport", "entertainment", "business", "culture")
+                }
+                setupRecyclerView()
+            }
+        } else {
+
+        }
+    }
+    private fun setupRecyclerView() {
         topicsRecyclerView.adapter = ReadingTopicsAdapter(topics) { selectedTopic ->
-            // Handle topic selection
             Toast.makeText(this, "Selected: $selectedTopic", Toast.LENGTH_SHORT).show()
             onCategorySelected(selectedTopic)
         }
 
-        // Optionally, add dividers between RecyclerView items
         val dividerItemDecoration = DividerItemDecoration(topicsRecyclerView.context,
             (topicsRecyclerView.layoutManager as LinearLayoutManager).orientation)
         topicsRecyclerView.addItemDecoration(dividerItemDecoration)
-
-        val closeButton: ImageButton = findViewById(R.id.closeButton)
-        closeButton.setOnClickListener {
-
-            val intent = Intent(this@ChooseReadingTopicActivity, ExercisesActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     fun onCategorySelected(categoryName: String) {
@@ -50,5 +70,9 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun getCurrentUserId(): String? {
+        val user = FirebaseAuth.getInstance().currentUser
+        return user?.uid // Returns the user ID of the currently signed-in user or null if no user is signed in.
+    }
 
 }

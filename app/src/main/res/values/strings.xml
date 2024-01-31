@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">FinalYearProject</string>
+    <string name="reading_desc">Read the following 3 passages out loud, and listen to the delayed audio feedback, after each passage score yourself on how you think you sounded and your scores will be saved! Make sure to check out the progress page to find your old scores and your improvement over time!</string>
+    <string name="daf_desc">Delayed Auditory Feedback, is a type of altered auditory feedback that consists of extending the time between speech and auditory perception. It can consist of a device that enables a user to speak into a microphone and then hear their voice in headphones a fraction of a second later</string>
+    <string name="syll_count_info">Select the correct number of syllables for the word show on screen, your score out of 10 will be saved!</string>
+    <string name="ton_twist_info">Select a tongue twister to listen to and to try yourself! The list of tongue twisters has been tailored to you to you, putting the tongue twisters that contain your feared sounds towards the top!</string>
 </resources>

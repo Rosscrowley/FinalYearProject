@@ -29,8 +29,6 @@ class SurveyActivity : AppCompatActivity() {
             SoundItem("HH", "House, Hot"),
             SoundItem("NG", "SiNG, loNG"),
             SoundItem("AA", "fAther, smArt"),
-            SoundItem("IH", "bIg, wIn"),
-            SoundItem("IY", "bEE, shE"),
             SoundItem("AY", "mY, whY"),
             SoundItem("OY", "bOY, tOY"),
             SoundItem("CH", "CHair, CHina"),
@@ -39,14 +37,9 @@ class SurveyActivity : AppCompatActivity() {
             SoundItem("AE", "At, jAcket"),
             SoundItem("UW", "yOU, fOOd"),
             SoundItem("S", "Say, boSS"),
-            SoundItem("T", "Take, Tall"),
-            SoundItem("D", "Day, oDD"),
-            SoundItem("N", "No, boSS"),
-            SoundItem("T", "Take, keeN"),
-            SoundItem("P", "Pay, hiP"),
-            SoundItem("F", "For, oFF"),
             SoundItem("B", "Buy, Big"),
-            SoundItem("M", "Man, dooM"),
+            SoundItem("Z", "Zoo, buZZ"),
+
 
         )
 
@@ -71,7 +64,7 @@ class SurveyActivity : AppCompatActivity() {
         val userId = firebaseAuth.currentUser?.uid
         userId?.let { uid ->
             // Assuming you want to store the selected sounds under the "feared_sounds" node
-            database.child("users").child(uid).child("isFirstLogin").setValue(false).addOnSuccessListener {
+            database.child("users").child(uid).child("firstLogin").setValue(false).addOnSuccessListener {
                 database.child("users").child(uid).child("feared_sounds").setValue(selectedSounds)
                     .addOnSuccessListener {
                         // Handle success

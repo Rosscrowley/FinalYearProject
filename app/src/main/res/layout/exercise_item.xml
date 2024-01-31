@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/exercise_name"
+        android:layout_width="240dp"
+        android:layout_height="36dp"
+        android:text="Exercise Name"
+        android:textSize="20sp" />
+</LinearLayout>

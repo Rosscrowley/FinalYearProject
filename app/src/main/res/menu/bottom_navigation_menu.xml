@@ -6,12 +6,12 @@
         android:title="Progress"
         android:icon="@drawable/progress_icon" />
     <item
+        android:id="@+id/menu_item_home"
+        android:title="Home"
+        android:icon="@drawable/home_icon" />
+    <item
         android:id="@+id/menu_item_exercise"
         android:title="Exercise"
         android:icon="@drawable/exercise_icon" />
-    <item
-        android:id="@+id/menu_item_chat"
-        android:title="Chat"
-        android:icon="@drawable/message_icon" />
 
 </menu>

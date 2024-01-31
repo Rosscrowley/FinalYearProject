@@ -108,12 +108,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/ageEntered"
+            android:id="@+id/dobEntered"
             style="@style/LoginTextInputInnerFieldStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Type your Age"
-            android:inputType="number"
+            android:hint="Type your Date of Birth (dd/mm/yyyy)"
+            android:inputType="none"
             tools:layout_editor_absoluteX="12dp"
             tools:layout_editor_absoluteY="221dp" />
 
