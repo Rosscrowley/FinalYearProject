@@ -174,8 +174,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
                 loadQuestion()
                 progressBar.visibility = View.GONE
             }
-            // Use the 'allWords' list as needed
-            // Remember to perform UI operations on the main thread
+
         }.start()
     }
     data class WordData(val word: String, val syllableCount: Int)
@@ -210,8 +209,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
                 currentQuestionIndex++
 
                 if (currentQuestionIndex >= quizQuestions.size) {
-                    // All questions have been answered
-                    // You can navigate to a results page or show a summary
+
                     finishQuiz()
                     return
                 }

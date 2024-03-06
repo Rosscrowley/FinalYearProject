@@ -44,7 +44,7 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
                 topics = if (category == "Kids Topics") {
                     listOf("Animals", "Space", "Fairy Tales", "Nature") // Example kids topics
                 } else {
-                    listOf("Science", "Food", "History", "sport", "entertainment", "business", "culture")
+                    listOf("Food", "history", "news", "sport", "entertainment", "business", "culture")
                 }
                 setupRecyclerView()
             }
@@ -72,7 +72,7 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
 
     private fun getCurrentUserId(): String? {
         val user = FirebaseAuth.getInstance().currentUser
-        return user?.uid // Returns the user ID of the currently signed-in user or null if no user is signed in.
+        return user?.uid
     }
 
 }

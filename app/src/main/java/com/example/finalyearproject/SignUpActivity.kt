@@ -86,7 +86,6 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    // Validate the date of birth format (you may need to enhance the validation logic)
     fun isValidDob(input: String): Boolean {
         return input.matches("\\d{2}/\\d{2}/\\d{4}".toRegex())
     }

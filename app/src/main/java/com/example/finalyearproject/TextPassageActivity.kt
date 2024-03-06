@@ -8,19 +8,24 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalyearproject.ChooseReadingTopicActivity.Companion.EXTRA_CATEGORY_NAME
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -29,8 +34,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.ObjectOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -41,18 +52,34 @@ class TextPassageActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_AUDIO_PERMISSION_CODE = 1
     }
+    private var amplitudes: ArrayList<Float>? = null
     private lateinit var viewPager: ViewPager2
     private lateinit var bottomNavigationView: BottomNavigationView
     private var isRecording = false
+    private var isRecordingDAF = false
     private val sampleRate = 44100
     private val delayMillis = 500
     private lateinit var startButton: Button
     private lateinit var ratingBar: RatingBar
     private lateinit var progressBar: ProgressBar
+    private var mediaRecorder: MediaRecorder? = null
+    private var audioFilePath: String? = null
+    private lateinit var db : AppDatabase
 
+    private var dirPath = ""
+    private var filename = ""
+
+
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.viewpager2)
+
+        db = Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "audioRecords"
+        ).build()
 
         val categoryName = intent.getStringExtra(EXTRA_CATEGORY_NAME)
         viewPager = findViewById(R.id.viewPager_passages)
@@ -74,24 +101,133 @@ class TextPassageActivity : AppCompatActivity() {
             }
         }
         startButton = findViewById(R.id.startRecButton)
-
         startButton.setOnClickListener {
-            if (isRecording) {
-                stopRecording()
-            } else {
-                if (checkPermission()) {
-                    startRecordingAndPlayback()
-                } else {
-                    requestPermissions()
-                }
+                toggleRecording()
             }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun toggleRecording() {
+        if (isRecording && isRecordingDAF) {
+            stopRecordingAndPlayBack()
+            stopRecording()
+            isRecording = false
+            isRecordingDAF = false
+            startButton.text = "Start Recording"
+            // Optionally, upload the audio file after stopping the recording
+            showSaveOptionDialog()
+
+        } else {
+            startRecording()
+            startRecordingAndPlayback()
+            isRecording = true
+            isRecordingDAF = true
+            startButton.text = "Stop Recording"
+        }
+    }
+
+    private fun showSaveOptionDialog() {
+        val input = EditText(this)
+        input.inputType = InputType.TYPE_CLASS_TEXT
+
+        AlertDialog.Builder(this)
+            .setTitle("Save Recording")
+            .setMessage("Enter a name for the recording:")
+            .setView(input)
+            .setPositiveButton("Save") { dialog, which ->
+                val recordingName = input.text.toString()
+                Log.d("VoiceRecordListActivity", "Saving recording with name: $recordingName")
+                saveRecording(recordingName) // Pass the recording name to the save method
+            }
+            .setNegativeButton("Discard") { dialog, which ->
+                Log.d("VoiceRecordListActivity", "Discarding recording.")
+                // Optionally delete the temporary file or handle the discard action
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun saveRecording(recordingName: String) {
+        val newFilename = recordingName
+        Log.d("VoiceRecordListActivity", "Attempting to save recording: $newFilename")
+
+
+        if(newFilename != filename){
+            var newFile = File("$dirPath$newFilename.mp3")
+            File("$dirPath$filename.mp3").renameTo(newFile)
+            Log.d("VoiceRecordListActivity", "File renamed: $newFilename")
         }
 
+        var filePath = "$dirPath$newFilename.mp3"
+        var timestamp = Date().time
+        var ampsPath = "$dirPath$newFilename"
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        try{
+            var fos = FileOutputStream(ampsPath)
+            var out = ObjectOutputStream(fos)
+            out.writeObject(amplitudes)
+            fos.close()
+            out.close()
+            Log.d("VoiceRecordListActivity", "Amplitudes saved successfully.")
+        }catch (e :IOException){
+            Log.e("VoiceRecordListActivity", "Failed to save amplitudes", e)
+        }
+
+        if (userId != null) {
+            var record = AudioRecord(newFilename, filePath, timestamp, ampsPath, userId)
+
+
+            GlobalScope.launch {
+                db.audioRecordingDao().insertRecording(record)
+                Log.d("VoiceRecordListActivity", "Recording saved with ID: $userId")
+            }
+        }else {
+            Log.d("VoiceRecordListActivity", "User ID is null, recording not saved.")
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun startRecording() {
+        Log.d("Recording", "Is recording")
+       // mediaRecorder?.release() // Release any existing recorder
+        //mediaRecorder = null // Clear the existing recorder
+
+        isRecording = true
+        dirPath = "${externalCacheDir?.absolutePath}/"
+
+        var simpleDateFormat = SimpleDateFormat("yyyy.MM.DD_hh.mm.ss")
+        var date = simpleDateFormat.format(Date())
+        filename = "audio_record_$date"
+
+        mediaRecorder = MediaRecorder(this).apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile("$dirPath$filename.mp3")
+            try {
+                prepare()
+            } catch (e: IOException) {
+                Log.e("AudioRecord", "prepare() failed")
+            }
+
+            start()
+        }
+    }
+
+
+    fun formatDate(timestamp: Long): String {
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = Date(timestamp)
+        return formatter.format(date)
     }
 
     @SuppressLint("MissingPermission")
     private fun startRecordingAndPlayback() {
-        isRecording = true
+        isRecordingDAF = true
         startButton.text = "Stop"
         val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
         val bufferSize = minBufferSize * 2
@@ -113,7 +249,7 @@ class TextPassageActivity : AppCompatActivity() {
 
             val tempBuffer = ShortArray(minBufferSize)
 
-            while (isRecording) {
+            while (isRecordingDAF) {
                 val readSize = audioRecord.read(tempBuffer, 0, minBufferSize)
                 if (readSize > 0) {
                     tempBuffer.forEach { circularBuffer.write(it) }
@@ -132,10 +268,18 @@ class TextPassageActivity : AppCompatActivity() {
     }
 
     private fun stopRecording() {
-        isRecording = false
-        startButton.text = "Start"
+        isRecordingDAF = false
+    }
 
-        showRatingDialog()
+    private fun stopRecordingAndPlayBack() {
+        // Stop and release MediaRecorder
+        mediaRecorder?.apply {
+            stop()
+            release()
+        }
+        mediaRecorder = null // Reset the mediaRecorder
+
+
     }
 
     private fun showRatingDialog() {
@@ -176,7 +320,7 @@ class TextPassageActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_AUDIO_PERMISSION_CODE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    startRecordingAndPlayback()
+                   // startRecordingAndPlayback()
                 }
             }
         }
@@ -280,35 +424,35 @@ class TextPassageActivity : AppCompatActivity() {
             }
     }
 
-data class Headline(val title: String, val url: String)
-class CircularBuffer(size: Int) {
-    private val buffer = ShortArray(size)
-    private var writeIndex = 0
-    private var readIndex = 0
+    data class Headline(val title: String, val url: String)
+    class CircularBuffer(size: Int) {
+        private val buffer = ShortArray(size)
+        private var writeIndex = 0
+        private var readIndex = 0
 
-    val isFull: Boolean
-        get() = (writeIndex + 1) % buffer.size == readIndex
+        val isFull: Boolean
+            get() = (writeIndex + 1) % buffer.size == readIndex
 
-    val isEmpty: Boolean
-        get() = writeIndex == readIndex
+        val isEmpty: Boolean
+            get() = writeIndex == readIndex
 
-    fun write(value: Short) {
-        if (!isFull) {
-            buffer[writeIndex] = value
-            writeIndex = (writeIndex + 1) % buffer.size
+        fun write(value: Short) {
+            if (!isFull) {
+                buffer[writeIndex] = value
+                writeIndex = (writeIndex + 1) % buffer.size
+            }
+        }
+
+        fun read(): Short {
+            return if (!isEmpty) {
+                val value = buffer[readIndex]
+                readIndex = (readIndex + 1) % buffer.size
+                value
+            } else {
+                0
+            }
         }
     }
-
-    fun read(): Short {
-        return if (!isEmpty) {
-            val value = buffer[readIndex]
-            readIndex = (readIndex + 1) % buffer.size
-            value
-        } else {
-            0
-        }
-    }
-}
 
 }
 

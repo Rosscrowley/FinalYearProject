@@ -25,7 +25,6 @@ class ProgressActivity : AppCompatActivity() {
 
         val exercises = listOf(Exercise("Reading1", "Reading Progress"), Exercise("TongueTwister1", "Tongue Twister Progress"), Exercise("SyllableCounting1", "Syllable Counting Progress")) // Example data
         exercisesRecyclerView.adapter = ExerciseAdapter(exercises) { exercise ->
-            // Handle exercise selection
             val intent = Intent(this, ExerciseProgressGraphActivity::class.java)
             intent.putExtra("EXERCISE_ID", exercise.id)
             startActivity(intent)

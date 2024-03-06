@@ -21,10 +21,10 @@ class BreathingViewModel : ViewModel() {
     private var exerciseJob: Job? = null
 
     fun startExercise() {
-        // Cancel any ongoing exercise job
+
         exerciseJob?.cancel()
         exerciseJob = viewModelScope.launch {
-            while (isActive) { // isActive is a property of coroutine Job
+            while (isActive) {
                 // Breathe in
                 _state.postValue(BreathingState.Inhale)
                 delay(4000) // Duration of breathing in
@@ -45,18 +45,16 @@ class BreathingViewModel : ViewModel() {
     }
 
     fun pauseExercise() {
-        // Pause the exercise by cancelling the coroutine
+
         exerciseJob?.cancel()
     }
 
     fun restartExercise() {
-        // Restart the exercise
         startExercise()
     }
 
     override fun onCleared() {
         super.onCleared()
-        // Cancel the job when the ViewModel is cleared to avoid memory leaks
         exerciseJob?.cancel()
     }
 }

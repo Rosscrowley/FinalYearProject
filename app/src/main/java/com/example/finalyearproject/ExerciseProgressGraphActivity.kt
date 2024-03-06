@@ -78,7 +78,6 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
                 dailyScores.map { it.score }.average().toFloat()
             }
 
-        // Convert the map to chart entries
         val entries = averageScoresByDate.map { (date, avgScore) ->
             Entry(convertDateToXValue(date), avgScore)
         }
@@ -125,7 +124,6 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
     private fun convertDateToXValue(dateStr: String): Float {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = format.parse(dateStr) ?: return 0f
-        // Convert to a timestamp representing the start of the day
         val calendar = Calendar.getInstance()
         calendar.time = date
         calendar.set(Calendar.HOUR_OF_DAY, 0)
