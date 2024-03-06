@@ -65,14 +65,13 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
 
         textToSpeechService = TextToSpeechService(this)
 
-        // Initialize the TextView
         tongueTwisterContentTextView = findViewById(R.id.selectedTongueTwisterContentTextView)
 
         // Retrieve the content from the intent
         val intent = intent
         val tongueTwisterContent = intent.getStringExtra(ChooseTongueTwisterActivity.TONGUE_TWISTER_CONTENT)
         Log.d("SelectedTongueTwisterActivity", "Received content: $tongueTwisterContent")
-        // Set the content to the TextView
+
         tongueTwisterContentTextView.text = tongueTwisterContent
 
         buttonListen = findViewById<Button>(R.id.listenButton)
@@ -114,8 +113,6 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
 
         override fun onPostExecute(audioContents: ByteString?) {
             if (audioContents != null) {
-                // Implement the code to play the audioContents, e.g., using MediaPlayer
-                // For brevity, I'm omitting the audio playback code here
                 playAudio(audioContents.toByteArray())
             } else {
                 // Handle the case where the API call fails

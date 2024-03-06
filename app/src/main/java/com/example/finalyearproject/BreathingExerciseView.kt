@@ -20,9 +20,9 @@ class BreathingExerciseView(context: Context, attrs: AttributeSet) : View(contex
     }
 
     fun animateBreathingIn() {
-        circleColor = inhaleColor // Set to inhale color
+        circleColor = inhaleColor
         val animator = ValueAnimator.ofFloat(minRadius, maxRadius).apply {
-            duration = 3000 // Duration of breathe in is 3 seconds
+            duration = 3000
             addUpdateListener {
                 circleRadius = it.animatedValue as Float
                 invalidate()
@@ -32,19 +32,18 @@ class BreathingExerciseView(context: Context, attrs: AttributeSet) : View(contex
     }
 
     fun animateHolding() {
-        // No change in radius, just hold the color for 3 seconds
         postDelayed({
-            invalidate() // Trigger a redraw to ensure any queued drawing operations are completed
-        }, 3000) // Hold duration is 3 seconds
+            invalidate()
+        }, 3000)
     }
 
     fun animateBreathingOut() {
-        circleColor = exhaleColor // Set to exhale color
+        circleColor = exhaleColor
         val animator = ValueAnimator.ofFloat(maxRadius, minRadius).apply {
-            duration = 3000 // Duration of breathing out is 3 seconds
+            duration = 3000
             addUpdateListener { animation ->
                 circleRadius = animation.animatedValue as Float
-                invalidate() // Redraw the view with the new radius
+                invalidate()
             }
             start()
         }

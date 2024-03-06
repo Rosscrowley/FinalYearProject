@@ -6,10 +6,8 @@ import android.graphics.Color
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.audiofx.Visualizer
 import android.os.AsyncTask
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -22,6 +20,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.protobuf.ByteString
 import java.io.File
@@ -145,8 +144,6 @@ import java.util.Locale
 
          override fun onPostExecute(audioContents: ByteString?) {
              if (audioContents != null) {
-                 // Implement the code to play the audioContents, e.g., using MediaPlayer
-                 // For brevity, I'm omitting the audio playback code here
                  playAudio(audioContents.toByteArray())
              } else {
                  // Handle the case where the API call fails

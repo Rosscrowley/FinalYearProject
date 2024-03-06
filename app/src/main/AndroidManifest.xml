@@ -120,8 +120,18 @@
         <activity
             android:name=".TonTwistInfoPage"
             android:exported="true">
-
         </activity>
+
+        <activity
+            android:name=".AudioPlayerActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".VoiceRecordListActivity"
+            android:exported="true">
+        </activity>
+
 
     </application>
 

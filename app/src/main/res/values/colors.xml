@@ -9,8 +9,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="gold">#EDB303</color>
     <color name="light_blue">#C4D8E6</color>
-
-
+    <color name="strokeColor">#1E88E5</color>
+    <color name="gray">#ECECEC</color>
+    <color name="grayDark">#656565</color>
+    <color name="playerColor"> #FF4349</color>
+    <color name="opaqueBG">#61000000</color>
 
     <color name="yellow">#FFC801</color>
 </resources>
