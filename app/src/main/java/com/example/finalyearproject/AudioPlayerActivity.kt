@@ -1,8 +1,12 @@
 package com.example.finalyearproject
 
+import android.content.res.Resources
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.widget.HorizontalScrollView
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
@@ -20,17 +24,21 @@ class AudioPlayerActivity : AppCompatActivity() {
         private const val TAG = "AudioPlayerActivity"
     }
 
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var updateWaveformRunnable: Runnable
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var playButton: ImageButton
     private lateinit var waveformView: WaveformView
+    private lateinit var horizontalScrollView: HorizontalScrollView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_audio)
 
         waveformView = findViewById(R.id.waveformId)
 
-        val timestamp = System.currentTimeMillis()
-        val outputFilePath = "${getExternalFilesDir(null)}/converted$timestamp.pcm"
+        horizontalScrollView = findViewById(R.id.horizontalScrollView)
+       // val timestamp = System.currentTimeMillis()
+        //val outputFilePath = "${getExternalFilesDir(null)}/converted$timestamp.pcm"
         val filePath = intent.getStringExtra(EXTRA_AUDIO_FILE_PATH)
         Log.d(TAG, "File path received: $filePath")
 
@@ -44,31 +52,65 @@ class AudioPlayerActivity : AppCompatActivity() {
 
                 readAndSetPcmData(outputFilePath)
             }
-            // Initialize MediaPlayer with the MP3 file for playback
+
             initializeMediaPlayer(filePath)
         } else {
             Log.e(TAG, "File path is null")
         }
+
+        initWaveformUpdater()
 
         playButton.setOnClickListener {
             if (mediaPlayer?.isPlaying == true) {
                 mediaPlayer?.pause()
 
             } else {
+                Log.d(TAG, "Starting playback")
                 mediaPlayer?.start()
+                handler.post(updateWaveformRunnable) // Ensure this is being called
 
             }
         }
     }
 
+    private fun initWaveformUpdater() {
+        updateWaveformRunnable = Runnable {
+            mediaPlayer?.let { mp ->
+                if (mp.isPlaying) {
+                    val currentPosition = mp.currentPosition.toLong()
+                    waveformView.setPlaybackPosition(currentPosition)
+
+                    val scrollPosition = calculateScrollPosition(currentPosition)
+                    horizontalScrollView.scrollTo(scrollPosition, 0) // Scroll to the calculated position
+
+                    handler.postDelayed(updateWaveformRunnable, 100) // Schedule the next update
+                }
+            }
+        }
+    }
+
+    private fun calculateScrollPosition(currentPositionMs: Long): Int {
+        val proportionPlayed = currentPositionMs.toFloat() / mediaPlayer?.duration!!
+        val totalWidth = waveformView.width
+        val scrollPosition = (proportionPlayed * totalWidth).toInt()
+
+        // Adjust the scroll position to keep the playback indicator centered
+        val scrollViewWidth = horizontalScrollView.width
+        val centeredPosition = (scrollPosition - scrollViewWidth / 2).coerceAtLeast(0)
+
+        return centeredPosition
+    }
+
     private fun readAndSetPcmData(filePath: String) {
-        // Assuming readPcmFile returns ShortArray suitable for your waveform visualization
         val audioData = readPcmFile(filePath)
         runOnUiThread {
             if (audioData != null) {
+                Log.d(TAG, "Setting audio data for waveform")
                 waveformView.setAudioData(audioData)
+            }else {
+                Log.e(TAG, "Failed to load audio data")
             }
-            // You might enable the play button here if you want to ensure waveform is ready
+
         }
     }
 
@@ -81,8 +123,10 @@ class AudioPlayerActivity : AppCompatActivity() {
 
                 setOnPreparedListener {
                     Log.d(TAG, "MediaPlayer is prepared and ready to play")
-                    // Enable the play button here if you want to wait until the media is prepared
+                    val durationMs = this.duration.toLong()
                     playButton.isEnabled = true
+                    waveformView.totalDurationMs = durationMs
+                    adjustWaveformWidth(durationMs)
                 }
 
                 setOnCompletionListener {
@@ -111,13 +155,11 @@ class AudioPlayerActivity : AppCompatActivity() {
             val byteBuffer = ByteBuffer.allocateDirect(size * 2)
             byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
             while (inputStream.read(byteBuffer) > 0) {
-                // Keep reading until end of file
             }
             byteBuffer.flip()
             byteBuffer.asShortBuffer().get(tempAudioData)
             inputStream.close()
 
-            // Scale and trim silence
             val scaledAndTrimmedAudioData = tempAudioData
                 .map { (it * scale).toInt().toShort() } // Scale
                 .filterIndexed { index, value ->
@@ -145,11 +187,47 @@ class AudioPlayerActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun adjustWaveformWidth(durationMs: Long) {
+        Log.d(TAG, "Audio duration: $durationMs ms")
+
+        var pixelsPerSecond = 1000
+
+        if (durationMs > 60000) {
+            pixelsPerSecond += 50
+        }
+
+        val totalWidth = ((durationMs / 1000F) * pixelsPerSecond).toInt()
+
+        val screenWidth = Resources.getSystem().displayMetrics.widthPixels
+        val baseMinWidth = 2000
+        val minWidth = Math.max(screenWidth, baseMinWidth)
+
+        val waveformWidth = Math.max(minWidth, totalWidth)
+
+        Log.d(TAG, "Calculated waveform width: $waveformWidth")
+
+      waveformView.setDynamicWidth(waveformWidth)
+
+        Log.d(TAG, "Waveform width dynamically set to: $waveformWidth pixels")
+    }
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer?.release()
         Log.d(TAG, "MediaPlayer resources released")
         mediaPlayer = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Start updating the waveform when the activity starts
+        handler.post(updateWaveformRunnable)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Stop updating the waveform when the activity stops
+        handler.removeCallbacks(updateWaveformRunnable)
     }
 }
 

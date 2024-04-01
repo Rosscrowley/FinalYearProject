@@ -25,7 +25,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.room.Room
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalyearproject.ChooseReadingTopicActivity.Companion.EXTRA_CATEGORY_NAME
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -65,6 +64,7 @@ class TextPassageActivity : AppCompatActivity() {
     private var mediaRecorder: MediaRecorder? = null
     private var audioFilePath: String? = null
     private lateinit var db : AppDatabase
+    private var recordingStartTime: Long = 0
 
     private var dirPath = ""
     private var filename = ""
@@ -75,11 +75,7 @@ class TextPassageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.viewpager2)
 
-        db = Room.databaseBuilder(
-            this,
-            AppDatabase::class.java,
-            "audioRecords"
-        ).build()
+        db = DatabaseManager.getDatabase(this)
 
         val categoryName = intent.getStringExtra(EXTRA_CATEGORY_NAME)
         viewPager = findViewById(R.id.viewPager_passages)
@@ -109,15 +105,18 @@ class TextPassageActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     private fun toggleRecording() {
+        if (!checkPermission()) {
+            requestPermissions()
+            return
+        }
+
         if (isRecording && isRecordingDAF) {
             stopRecordingAndPlayBack()
             stopRecording()
             isRecording = false
             isRecordingDAF = false
             startButton.text = "Start Recording"
-            // Optionally, upload the audio file after stopping the recording
             showSaveOptionDialog()
-
         } else {
             startRecording()
             startRecordingAndPlayback()
@@ -150,6 +149,8 @@ class TextPassageActivity : AppCompatActivity() {
     }
 
     private fun saveRecording(recordingName: String) {
+        val recordingEndTime = System.currentTimeMillis() // Capture end time
+        val duration = recordingEndTime - recordingStartTime
         val newFilename = recordingName
         Log.d("VoiceRecordListActivity", "Attempting to save recording: $newFilename")
 
@@ -177,9 +178,8 @@ class TextPassageActivity : AppCompatActivity() {
         }
 
         if (userId != null) {
-            var record = AudioRecord(newFilename, filePath, timestamp, ampsPath, userId)
-
-
+            var record = AudioRecord(newFilename, filePath, timestamp, ampsPath, userId, duration)
+            Log.d("VoiceRecordListActivity", "Recording saved with duration: $duration ms")
             GlobalScope.launch {
                 db.audioRecordingDao().insertRecording(record)
                 Log.d("VoiceRecordListActivity", "Recording saved with ID: $userId")
@@ -193,8 +193,8 @@ class TextPassageActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     private fun startRecording() {
         Log.d("Recording", "Is recording")
-       // mediaRecorder?.release() // Release any existing recorder
-        //mediaRecorder = null // Clear the existing recorder
+
+        recordingStartTime = System.currentTimeMillis()
 
         isRecording = true
         dirPath = "${externalCacheDir?.absolutePath}/"
@@ -312,15 +312,24 @@ class TextPassageActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_AUDIO_PERMISSION_CODE)
+        val permissionsToRequest = mutableListOf<String>()
+        permissionsToRequest.add(Manifest.permission.RECORD_AUDIO)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            permissionsToRequest.add(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+        ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), REQUEST_AUDIO_PERMISSION_CODE)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_AUDIO_PERMISSION_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                   // startRecordingAndPlayback()
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    toggleRecording() // Try toggling recording again now that permission is granted
+                } else {
+                    // Inform the user that permission was not granted
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
                 }
             }
         }

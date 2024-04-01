@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,11 +34,7 @@ class VoiceRecordListActivity : AppCompatActivity() {
         }
         recyclerView.adapter = mAdapter
 
-        db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "audioRecords"
-        ).build()
+        db = DatabaseManager.getDatabase(this)
 
         fetchAll(currentUserID)
     }

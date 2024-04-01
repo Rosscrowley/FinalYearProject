@@ -21,7 +21,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var pronunCard: CardView
     private lateinit var exerciseCard: CardView
+    private lateinit var compareCard: CardView
     private lateinit var voiceRecordingCard: CardView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -47,6 +49,11 @@ class MainActivity : AppCompatActivity() {
         exerciseCard = findViewById(R.id.exercisesCard)
         exerciseCard.setOnClickListener{
             val intent = Intent(this@MainActivity, ExercisesActivity::class.java)
+            startActivity(intent)
+        }
+        compareCard = findViewById(R.id.audioWaveComparison)
+        compareCard.setOnClickListener{
+            val intent = Intent(this@MainActivity, WordListActivity::class.java)
             startActivity(intent)
         }
         updateWelcomeMessage()

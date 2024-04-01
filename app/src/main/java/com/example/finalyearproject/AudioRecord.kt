@@ -10,7 +10,8 @@ data class AudioRecord(
     var filePath: String,
     var timestamp: Long,
     var ampsPath: String,
-    var userID: String
+    var userID: String,
+    var duration: Long
 ) {
     @PrimaryKey(autoGenerate = true)
     var id = 0
