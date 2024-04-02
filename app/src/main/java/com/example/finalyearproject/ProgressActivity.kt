@@ -46,6 +46,12 @@ class ProgressActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.menu_item_wave_analysis -> {
+                    // Navigate to Exercise
+                    val intent = Intent(this@ProgressActivity, WaveAnalysisPageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 else -> false
             }
         }

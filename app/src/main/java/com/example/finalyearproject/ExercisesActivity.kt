@@ -57,6 +57,12 @@ class ExercisesActivity : AppCompatActivity() {
                     startActivity(intent)
                     true
                 }
+                R.id.menu_item_wave_analysis -> {
+                    // Navigate to Exercise
+                    val intent = Intent(this@ExercisesActivity, WaveAnalysisPageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
                 else -> false
             }
         }

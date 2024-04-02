@@ -1,13 +1,19 @@
 package com.example.finalyearproject
 
+import DailyExerciseAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -21,13 +27,27 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var pronunCard: CardView
     private lateinit var exerciseCard: CardView
-    private lateinit var compareCard: CardView
-    private lateinit var voiceRecordingCard: CardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        val exercises = listOf("Exercise 1", "Exercise 2", "Exercise 3", "Exercise 4", "Exercise 5") // Example dataset
+        val recyclerView: RecyclerView = findViewById(R.id.dailyExercisesRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = DailyExerciseAdapter(exercises)
+
+        val dividerItemDecoration = DividerItemDecoration(
+            recyclerView.context,
+            (recyclerView.layoutManager as LinearLayoutManager).orientation
+        )
+        recyclerView.addItemDecoration(dividerItemDecoration)
+
+
+        val infoIcon: ImageView = findViewById(R.id.infoIcon)
+        infoIcon.setOnClickListener {
+            showExercisesInfoDialog()
+        }
 
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -40,20 +60,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        voiceRecordingCard = findViewById(R.id.recordingCard)
-        voiceRecordingCard.setOnClickListener{
-            val intent = Intent(this@MainActivity, VoiceRecordListActivity::class.java)
-            startActivity(intent)
-        }
-
         exerciseCard = findViewById(R.id.exercisesCard)
         exerciseCard.setOnClickListener{
             val intent = Intent(this@MainActivity, ExercisesActivity::class.java)
-            startActivity(intent)
-        }
-        compareCard = findViewById(R.id.audioWaveComparison)
-        compareCard.setOnClickListener{
-            val intent = Intent(this@MainActivity, WordListActivity::class.java)
             startActivity(intent)
         }
         updateWelcomeMessage()
@@ -71,6 +80,12 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_item_exercise -> {
                     // Navigate to Exercise
                     val intent = Intent(this@MainActivity, ExercisesActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.menu_item_wave_analysis -> {
+                    // Navigate to Exercise
+                    val intent = Intent(this@MainActivity, WaveAnalysisPageActivity::class.java)
                     startActivity(intent)
                     true
                 }
@@ -125,6 +140,17 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun showExercisesInfoDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("How Daily Exercises Work")
+        builder.setMessage(".")
+        builder.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
 }

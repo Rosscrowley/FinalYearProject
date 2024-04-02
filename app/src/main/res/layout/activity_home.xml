@@ -37,7 +37,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -59,8 +59,53 @@
                 android:layout_margin="25dp"
                 android:text="Welcome"
                 android:textAlignment="center"
-                android:textSize="25dp" />
+                android:textSize="25dp"
+                android:background="@drawable/border"/>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/streakText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/border">
+
+                <TextView
+                    android:id="@+id/dailyExercisesText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Daily Exercises"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/infoIcon"
+                    app:layout_constraintHorizontal_chainStyle="packed"/>
+
+                <ImageView
+                    android:id="@+id/infoIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_info_24"
+                    android:contentDescription="info_description"
+                    app:layout_constraintTop_toTopOf="@id/dailyExercisesText"
+                    app:layout_constraintBottom_toBottomOf="@id/dailyExercisesText"
+                    app:layout_constraintStart_toEndOf="@id/dailyExercisesText"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/dailyExercisesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/linearLayout"
+                android:background="@drawable/border"/>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/pronunTest"
