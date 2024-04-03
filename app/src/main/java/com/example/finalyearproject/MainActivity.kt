@@ -2,11 +2,13 @@ package com.example.finalyearproject
 
 import DailyExerciseAdapter
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -20,6 +22,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,15 +33,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var pronunCard: CardView
     private lateinit var exerciseCard: CardView
+    private val adapter = DailyExerciseAdapter(listOf(), this)
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var recommendationService: ExerciseRecommendationService
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        val exercises = listOf("Exercise 1", "Exercise 2", "Exercise 3", "Exercise 4", "Exercise 5") // Example dataset
-        val recyclerView: RecyclerView = findViewById(R.id.dailyExercisesRecyclerView)
+        recyclerView = findViewById(R.id.dailyExercisesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = DailyExerciseAdapter(exercises)
+        recyclerView.adapter = adapter
 
         val dividerItemDecoration = DividerItemDecoration(
             recyclerView.context,
@@ -92,6 +102,11 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+        val exerciseRepository = ExerciseRepository()
+        recommendationService = ExerciseRecommendationService(exerciseRepository)
+
+        // Example usage
+        fetchRecommendations()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -153,7 +168,23 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun fetchRecommendations() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val recommendations = recommendationService.fetchAndRecommendExercises(userId)
+                withContext(Dispatchers.Main) {
+                    val recyclerView: RecyclerView = findViewById(R.id.dailyExercisesRecyclerView)
+                    (recyclerView.adapter as? DailyExerciseAdapter)?.updateExercises(recommendations)
+
+                }
+            }
+        }
+    }
 }
+
+
 
 
 
