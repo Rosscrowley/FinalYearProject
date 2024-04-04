@@ -1,8 +1,8 @@
 package com.example.finalyearproject
 
-import androidx.appcompat.app.AppCompatActivity
-
 data class ExerciseActivity(
+    val id: String,
     val name: String,
-    val activityClass: Class<out AppCompatActivity>
+    val activityClassName: String? = null,
+    var completed: Boolean = false
 )

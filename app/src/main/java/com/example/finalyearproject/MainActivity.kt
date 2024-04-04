@@ -1,13 +1,17 @@
 package com.example.finalyearproject
 
 import DailyExerciseAdapter
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,32 +21,37 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickListener  {
 
     private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var pronunCard: CardView
     private lateinit var exerciseCard: CardView
-    private val adapter = DailyExerciseAdapter(listOf(), this)
+    private lateinit var adapter: DailyExerciseAdapter
     private lateinit var recyclerView: RecyclerView
     private lateinit var recommendationService: ExerciseRecommendationService
-
+    private val exerciseRepository = ExerciseRepository()
+    private var dailyExercises: List<ExerciseActivity> = listOf()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        adapter = DailyExerciseAdapter(listOf(), this, this)
         recyclerView = findViewById(R.id.dailyExercisesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -102,11 +111,14 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        val exerciseRepository = ExerciseRepository()
+
+
         recommendationService = ExerciseRecommendationService(exerciseRepository)
 
-        // Example usage
-        fetchRecommendations()
+
+//        Example usage
+//        fetchRecommendations()
+        initializeOrFetchExercises()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -168,20 +180,156 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun fetchRecommendations() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId != null) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val recommendations = recommendationService.fetchAndRecommendExercises(userId)
-                withContext(Dispatchers.Main) {
-                    val recyclerView: RecyclerView = findViewById(R.id.dailyExercisesRecyclerView)
-                    (recyclerView.adapter as? DailyExerciseAdapter)?.updateExercises(recommendations)
 
-                }
+
+    override fun onExerciseStart(exerciseName: String, activityClassName: String) {
+        try {
+            val clazz = Class.forName(activityClassName)
+            val intent = Intent(this, clazz)
+            Log.d("MainActivity", "Starting $exerciseName for result.")
+            startForResult.launch(intent)
+        } catch (e: ClassNotFoundException) {
+            Log.e("MainActivity", "Activity class not found: $activityClassName", e)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initializeOrFetchExercises() {
+        if (isNewDay() || fetchSavedDailyExercises().isNullOrEmpty()) {
+            // It's a new day or no exercises are saved, fetch and save new exercises
+            fetchAndSaveDailyExercises()
+        } else {
+            // Use saved exercises
+            dailyExercises = fetchSavedDailyExercises()!!
+            updateRecyclerView(dailyExercises)
+        }
+    }
+
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun checkForNewDayOrFetchSavedExercises() {
+//        Log.d("MainActivity", "Checking for new day or fetching saved exercises.")
+//        val savedExercises = fetchSavedDailyExercises()
+//        if (savedExercises == null || isNewDay()) {
+//            Log.d("MainActivity", "New day or no saved exercises found, fetching new exercises.")
+//            fetchAndSaveDailyExercises()
+//        } else {
+//            Log.d("MainActivity", "Using saved exercises.")
+//            dailyExercises = savedExercises
+//            updateRecyclerView(savedExercises)
+//            checkExerciseCompletionStatus()
+//        }
+//    }
+//
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun fetchDailyExercises() {
+//        Log.d("MainActivity", "Fetching daily exercises.")
+//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val exercises = recommendationService.fetchAndRecommendExercises(userId)
+//            Log.d("MainActivity", "Fetched exercises: $exercises")
+//            dailyExercises = exercises
+//            withContext(Dispatchers.Main) {
+//                updateRecyclerView(exercises)
+//            }
+//        }
+//    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun fetchAndSaveDailyExercises() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        CoroutineScope(Dispatchers.IO).launch {
+            val exercises = recommendationService.fetchAndRecommendExercises(userId)
+            withContext(Dispatchers.Main) {
+                saveDailyExercises(exercises, userId)
+                dailyExercises = exercises
+                updateRecyclerView(exercises)
             }
         }
     }
+
+    private fun saveDailyExercises(exercises: List<ExerciseActivity>, userId: String) {
+        val sharedPreferences = getSharedPreferences("${userId}_DailyExercisesPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val jsonExercises = gson.toJson(exercises)
+        editor.putString("${userId}_dailyExercises", jsonExercises)
+        editor.putLong("${userId}_lastSavedDate", System.currentTimeMillis())
+        editor.apply()
+    }
+
+    private fun fetchSavedDailyExercises(): List<ExerciseActivity>? {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val sharedPreferences = getSharedPreferences("${userId}_DailyExercisesPrefs", Context.MODE_PRIVATE)
+        val jsonExercises = sharedPreferences.getString("${userId}_dailyExercises", null)
+        return jsonExercises?.let {
+            val type = object : TypeToken<List<ExerciseActivity>>() {}.type
+            Gson().fromJson(it, type)
+        }
+    }
+
+    private fun isNewDay(): Boolean {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val sharedPreferences = getSharedPreferences("${userId}_DailyExercisesPrefs", Context.MODE_PRIVATE)
+        val lastSavedDate = sharedPreferences.getLong("${userId}_lastSavedDate", 0L)
+        val lastSavedDay = Calendar.getInstance().apply { timeInMillis = lastSavedDate }.get(Calendar.DAY_OF_YEAR)
+        val currentDay = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        return currentDay != lastSavedDay
+    }
+
+    private fun updateRecyclerView(exercises: List<ExerciseActivity>) {
+        Log.d("MainActivity", "Updating RecyclerView with exercises: $exercises")
+        adapter.updateExercises(exercises)
+    }
+
+    private fun checkExerciseCompletionStatus() {
+        Log.d("MainActivity", "Starting to fetch exercise completion status...")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app")
+            .getReference("userProgress/$userId/dailyExercises")
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    // Iterate over the exercises in the snapshot
+                    snapshot.children.forEach { exerciseSnapshot ->
+                        Log.d("MainActivity", "Processing snapshot for exercise: ${exerciseSnapshot.key}")
+                        val completed = exerciseSnapshot.child("completed").getValue(Boolean::class.java) ?: false
+                        Log.d("MainActivity", "Fetched completion status for: ${exerciseSnapshot.key}, Completed: $completed")
+
+
+                        dailyExercises.find { it.name == exerciseSnapshot.key }?.let { exercise ->
+                            Log.d("MainActivity", "Updating status for exercise: ${exercise.name} to $completed")
+                            exercise.completed = completed
+                        }
+                    }
+                    runOnUiThread {
+                        Log.d("MainActivity", "UI update initiated.")
+                        adapter.updateExercises(dailyExercises)
+                        Log.d("MainActivity", "UI should now be updated.")
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("MainActivity", "Failed to read exercise completion status.", error.toException())
+            }
+        })
+    }
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d("MainActivity", "Result OK received, checking exercise completion status.")
+            checkExerciseCompletionStatus()
+        } else {
+            Log.d("MainActivity", "Received result code: ${result.resultCode}")
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkExerciseCompletionStatus()
+    }
+
 }
 
 

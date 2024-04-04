@@ -3,6 +3,7 @@ package com.example.finalyearproject
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.NumberPicker
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.finalyearproject.databinding.ActivityBreathingExerciseBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class BreathingExerciseActivity : AppCompatActivity() {
 
@@ -39,6 +42,8 @@ class BreathingExerciseActivity : AppCompatActivity() {
             viewModel.startExercise()
         }
 
+        Log.e("Activity started", "Started")
+
         viewModel.state.observe(this, { state ->
             when (state) {
                 BreathingState.Inhale -> {
@@ -58,10 +63,12 @@ class BreathingExerciseActivity : AppCompatActivity() {
         })
 
         binding.pauseButton.setOnClickListener {
+            Log.e("Button Click", "Pause button clicked")
             viewModel.pauseExercise()
         }
 
         binding.restartButton.setOnClickListener {
+            Log.e("Button Click", "Restart button clicked")
             viewModel.restartExercise()
         }
     }
@@ -122,6 +129,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
     }
 
     fun onPauseButtonClick(view: View) {
+        Log.e("pauseTimer", "Started")
         viewModel.pauseExercise()
         pauseTimer()
     }
@@ -131,8 +139,26 @@ class BreathingExerciseActivity : AppCompatActivity() {
         restartTimer()
     }
     private fun pauseTimer() {
+        Log.e("pauseTimer", "Started")
         countdownTimer?.cancel()
         isTimerRunning = false
+        markExerciseAsComplete()
+    }
+
+    private fun markExerciseAsComplete() {
+        Log.e("markExerciseAsComplete", "Started")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        Log.d("markExerciseAsComplete userID:", " $userId")
+        val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/BreathingExercise")
+        val exerciseCompletionUpdate = mapOf("completed" to true)
+
+        databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
+            Log.d("ExerciseCompletion", "Breathing exercise marked as complete.")
+            // Optionally, refresh the data shown in the RecyclerView here or inform the user of success
+        }.addOnFailureListener {
+            Log.e("ExerciseCompletion", "Failed to mark breathing exercise as complete.", it)
+            // Handle the error, possibly inform the user
+        }
     }
 
     private fun restartTimer() {

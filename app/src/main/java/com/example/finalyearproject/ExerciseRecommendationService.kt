@@ -56,21 +56,31 @@ class ExerciseRecommendationService(private val exerciseRepository: ExerciseRepo
         Log.d("ExerciseRec", "Recommended exercises: $recommendedExerciseNames")
 
         val recommendedExercises = recommendedExerciseNames.mapNotNull { exerciseName ->
-            exerciseToActivityMap[exerciseName]?.let { activityClass ->
-                ExerciseActivity(exerciseName, activityClass)
-            }
+            val className = exerciseToActivityMap[exerciseName]?.name // Directly get the fully qualified class name as a string
+            if (className != null) {
+                ExerciseActivity("id_placeholder", exerciseName, className)
+            } else null
         }
+
+        Log.d("ExerciseRecService", "All Exercises: $allExercises")
+        Log.d("ExerciseRecService", "User's Exercise Scores: $userExerciseScores")
+        Log.d("ExerciseRecService", "Untried Exercises: $untriedExercises")
+        Log.d("ExerciseRecService", "Recommendations before prioritization: $recommendations")
+
+
+        Log.d("ExerciseRecService", "Final Recommended Exercises: $recommendedExercises")
 
         return recommendedExercises
     }
 
     private val exerciseToActivityMap = mapOf(
+
         "Breathing Exercise" to BreathingExerciseActivity::class.java,
         "Reading Comprehension" to ChooseReadingTopicActivity::class.java,
         "Tongue Twisters" to ChooseTongueTwisterActivity::class.java,
         "Syllable Counting" to SyllCountInfo::class.java,
-        "Flexible Rate Technique" to SyllCountInfo::class.java,
-        "Progressive Muscle Exercise" to SyllCountInfo::class.java,
-        // Add more mappings
+        "Flexible Rate Technique" to FlexRateTechExerciseActivity::class.java,
+        "Progressive Muscle Exercise" to ProgressiveMuscleExerciseActivity::class.java
     )
+
 }

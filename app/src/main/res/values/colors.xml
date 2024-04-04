@@ -14,6 +14,7 @@
     <color name="grayDark">#656565</color>
     <color name="playerColor"> #FF4349</color>
     <color name="opaqueBG">#61000000</color>
-    <color name="backgroundDT">#3EF10404</color>
+    <color name="DEIncomplete">#3EF10404</color>
+    <color name="DEComplete">#68E66D</color>
     <color name="yellow">#FFC801</color>
 </resources>

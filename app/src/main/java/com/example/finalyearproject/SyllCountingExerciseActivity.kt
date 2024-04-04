@@ -1,5 +1,6 @@
 package com.example.finalyearproject
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -231,6 +232,8 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
                 .setTitle("Quiz Complete")
                 .setMessage(scoreMessage)
                 .setPositiveButton("OK") { dialog, which ->
+                    markExerciseAsComplete()
+
                     // Navigate back to ExerciseActivity
                     saveUserExerciseScore(userId, "SyllableCounting1", correctAnswersCount)
                     val intent = Intent(this, ExercisesActivity::class.java)
@@ -251,5 +254,26 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
         val totalQuestions = quizQuestions.size
         val currentQuestionNumber = currentQuestionIndex + 1  // +1 because index starts at 0
         questionCountTextView.text = "$currentQuestionNumber/$totalQuestions"
+    }
+
+    private fun markExerciseAsComplete() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Syllable Counting")
+            val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
+
+            databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
+                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+                setResult(Activity.RESULT_OK)
+                finish()
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to mark exercise as complete: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 }
