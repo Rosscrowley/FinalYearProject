@@ -31,7 +31,7 @@ class BreathingViewModel : ViewModel() {
 
                 // Hold breath
                 _state.postValue(BreathingState.Hold)
-                delay(4000) // Duration of holding breath
+                delay(3000) // Duration of holding breath
 
                 // Breathe out
                 _state.postValue(BreathingState.Exhale)
@@ -39,7 +39,7 @@ class BreathingViewModel : ViewModel() {
 
                 // Hold breath
                 _state.postValue(BreathingState.Hold)
-                delay(4000) // Duration of holding breath
+                delay(3000) // Duration of holding breath
             }
         }
     }

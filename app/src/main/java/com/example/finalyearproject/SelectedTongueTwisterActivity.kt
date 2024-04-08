@@ -56,8 +56,6 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_selected_tongue_twister)
 
-
-
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@SelectedTongueTwisterActivity, ChooseTongueTwisterActivity::class.java)
@@ -83,8 +81,6 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
         })
 
         startButton = findViewById(R.id.tryButton)
-
-
 
         startButton.setOnClickListener {
             if (isRecording) {
@@ -290,6 +286,8 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
         if (userId != null) {
             val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Tongue Twisters")
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
+
+            XpManager.awardXpForActivity(userId, "tongueTwisterExercise", 3)
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
                 Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()

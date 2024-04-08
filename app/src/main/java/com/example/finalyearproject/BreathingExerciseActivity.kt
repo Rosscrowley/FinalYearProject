@@ -1,89 +1,111 @@
 package com.example.finalyearproject
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.NumberPicker
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.finalyearproject.databinding.ActivityBreathingExerciseBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class BreathingExerciseActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityBreathingExerciseBinding
     private lateinit var viewModel: BreathingViewModel
     private var countdownTimer: CountDownTimer? = null
     private var timeLeftInMilliseconds: Long = 0
     private var isTimerRunning: Boolean = false
     private var selectedDurationMs: Long = 0
 
+    private lateinit var instructionText: TextView
+    private lateinit var countdownText: TextView
+    private lateinit var playButton: ImageButton
+    private lateinit var pauseButton: ImageButton
+    private lateinit var restartButton: ImageButton
+    private lateinit var closeButton: ImageButton
+    private lateinit var breathingView: BreathingExerciseView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityBreathingExerciseBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_breathing_exercise)
 
-        promptDurationSelection()
+        instructionText = findViewById(R.id.instructionText)
+        countdownText = findViewById(R.id.countdownText)
+        playButton = findViewById(R.id.playButton)
+        pauseButton = findViewById(R.id.pauseButton)
+        restartButton = findViewById(R.id.restartButton)
+        closeButton = findViewById(R.id.closeButton)
+        breathingView = findViewById(R.id.breathingView)
 
-        val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
-            val intent = Intent(this@BreathingExerciseActivity, ExercisesActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this@BreathingExerciseActivity, ExercisesActivity::class.java))
         }
 
-        viewModel = ViewModelProvider(this).get(BreathingViewModel::class.java)
+        viewModel = ViewModelProvider(this)[BreathingViewModel::class.java]
 
-        binding.playButton.setOnClickListener {
-            viewModel.startExercise()
-        }
-
-        Log.e("Activity started", "Started")
-
-        viewModel.state.observe(this, { state ->
+        viewModel.state.observe(this) { state ->
             when (state) {
                 BreathingState.Inhale -> {
-                    binding.instructionText.text = "Breathe In"
-                    binding.breathingView.animateBreathingIn()
+                    instructionText.text = "Breathe In"
+                    breathingView.animateBreathingIn()
 
                 }
                 BreathingState.Hold -> {
-                    binding.instructionText.text = "Hold"
-                    binding.breathingView.animateHolding()
+                    instructionText.text = "Hold"
+                    breathingView.animateHolding()
                 }
                 BreathingState.Exhale -> {
-                    binding.instructionText.text = "Breathe Out"
-                    binding.breathingView.animateBreathingOut()
+                    instructionText.text = "Breathe Out"
+                    breathingView.animateBreathingOut()
                 }
             }
-        })
-
-        binding.pauseButton.setOnClickListener {
-            Log.e("Button Click", "Pause button clicked")
-            viewModel.pauseExercise()
         }
 
-        binding.restartButton.setOnClickListener {
-            Log.e("Button Click", "Restart button clicked")
-            viewModel.restartExercise()
+        playButton.setOnClickListener {
+            onPlayButtonClick(it)
         }
+
+        pauseButton.setOnClickListener {
+            onPauseButtonClick(it)
+        }
+
+        restartButton.setOnClickListener {
+            onRestartButtonClick(it)
+        }
+
+        promptDurationSelection()
     }
 
-    fun onPlayButtonClick(view: View) {
+    private fun onPlayButtonClick(view: View) {
         if (!isTimerRunning && selectedDurationMs > 0) {
             startCountdown()
             viewModel.startExercise()
         }
     }
 
-    private fun promptDurationSelection() {
+    private fun onPauseButtonClick(view: View) {
+        countdownTimer?.cancel()
+        viewModel.pauseExercise()
+        isTimerRunning = false
+    }
 
+    private fun onRestartButtonClick(view: View) {
+        restartTimer()
+        viewModel.startExercise()
+    }
+
+    private fun promptDurationSelection() {
         val numberPicker = NumberPicker(this).apply {
-            minValue = 1 // minimum time
+            minValue = 1
             maxValue = 10
         }
 
@@ -92,6 +114,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
             .setView(numberPicker)
             .setPositiveButton("OK") { dialog, _ ->
                 selectedDurationMs = numberPicker.value * 60 * 1000L
+                updateCountdownText(selectedDurationMs)
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel") { dialog, _ ->
@@ -101,10 +124,8 @@ class BreathingExerciseActivity : AppCompatActivity() {
     }
 
     private fun startCountdown() {
-
         timeLeftInMilliseconds = selectedDurationMs
-
-        countdownTimer?.cancel() // Cancel any existing timer
+        countdownTimer?.cancel()
 
         countdownTimer = object : CountDownTimer(timeLeftInMilliseconds, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -113,57 +134,45 @@ class BreathingExerciseActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                binding.countdownText.text = "Done!"
+                countdownText.text = "Done!"
                 isTimerRunning = false
-                timeLeftInMilliseconds = selectedDurationMs // Reset the timer duration for potential restart
+                timeLeftInMilliseconds = selectedDurationMs
+                markExerciseAsComplete()
             }
         }.start()
 
         isTimerRunning = true
     }
 
-    private fun updateCountdownText() {
-        val minutes = (timeLeftInMilliseconds / 1000) / 60
-        val seconds = (timeLeftInMilliseconds / 1000) % 60
-        binding.countdownText.text = String.format("%02d:%02d", minutes, seconds)
-    }
-
-    fun onPauseButtonClick(view: View) {
-        Log.e("pauseTimer", "Started")
-        viewModel.pauseExercise()
-        pauseTimer()
-    }
-
-    fun onRestartButtonClick(view: View) {
-        viewModel.restartExercise()
-        restartTimer()
-    }
-    private fun pauseTimer() {
-        Log.e("pauseTimer", "Started")
-        countdownTimer?.cancel()
-        isTimerRunning = false
-        markExerciseAsComplete()
-    }
-
-    private fun markExerciseAsComplete() {
-        Log.e("markExerciseAsComplete", "Started")
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        Log.d("markExerciseAsComplete userID:", " $userId")
-        val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/BreathingExercise")
-        val exerciseCompletionUpdate = mapOf("completed" to true)
-
-        databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-            Log.d("ExerciseCompletion", "Breathing exercise marked as complete.")
-            // Optionally, refresh the data shown in the RecyclerView here or inform the user of success
-        }.addOnFailureListener {
-            Log.e("ExerciseCompletion", "Failed to mark breathing exercise as complete.", it)
-            // Handle the error, possibly inform the user
-        }
+    private fun updateCountdownText(timeInMillis: Long = this.timeLeftInMilliseconds) {
+        val minutes = (timeInMillis / 1000) / 60
+        val seconds = (timeInMillis / 1000) % 60
+        countdownText.text = String.format("%02d:%02d", minutes, seconds)
     }
 
     private fun restartTimer() {
-        countdownTimer?.cancel()
-        timeLeftInMilliseconds = selectedDurationMs
         startCountdown()
+    }
+
+    private fun markExerciseAsComplete() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Breathing Exercise")
+            val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
+
+            databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
+                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+
+                setResult(Activity.RESULT_OK)
+                finish()
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to mark exercise as complete: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 }

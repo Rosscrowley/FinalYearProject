@@ -307,6 +307,8 @@ class TextPassageActivity : AppCompatActivity() {
             val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Reading Comprehension")
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
 
+            XpManager.awardXpForActivity(userId, "readingExercise", 3)
+
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
                 Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)

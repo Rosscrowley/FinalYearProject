@@ -232,7 +232,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
                 .setTitle("Quiz Complete")
                 .setMessage(scoreMessage)
                 .setPositiveButton("OK") { dialog, which ->
-                    markExerciseAsComplete()
+                    markExerciseAsComplete(correctAnswersCount)
 
                     // Navigate back to ExerciseActivity
                     saveUserExerciseScore(userId, "SyllableCounting1", correctAnswersCount)
@@ -256,11 +256,13 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
         questionCountTextView.text = "$currentQuestionNumber/$totalQuestions"
     }
 
-    private fun markExerciseAsComplete() {
+    private fun markExerciseAsComplete(score: Int) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
             val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Syllable Counting")
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
+
+            XpManager.awardXpForActivity(userId, "syllableCounting", score)
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
                 Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
