@@ -2,6 +2,7 @@ package com.example.finalyearproject
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioFormat
@@ -138,6 +139,7 @@ class TextPassageActivity : AppCompatActivity() {
                 val recordingName = input.text.toString()
                 Log.d("VoiceRecordListActivity", "Saving recording with name: $recordingName")
                 saveRecording(recordingName) // Pass the recording name to the save method
+                showRatingDialog()
             }
             .setNegativeButton("Discard") { dialog, which ->
                 Log.d("VoiceRecordListActivity", "Discarding recording.")
@@ -217,14 +219,6 @@ class TextPassageActivity : AppCompatActivity() {
             start()
         }
     }
-
-
-    fun formatDate(timestamp: Long): String {
-        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val date = Date(timestamp)
-        return formatter.format(date)
-    }
-
     @SuppressLint("MissingPermission")
     private fun startRecordingAndPlayback() {
         isRecordingDAF = true
@@ -297,6 +291,7 @@ class TextPassageActivity : AppCompatActivity() {
                     // Save the score after the user submits the rating
                     saveUserExerciseScore(userId, "Reading1", rating)
                     Toast.makeText(this, "Rating: $rating", Toast.LENGTH_SHORT).show()
+                    markExerciseAsComplete()
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
@@ -304,6 +299,27 @@ class TextPassageActivity : AppCompatActivity() {
             // Handle the case where there is no signed-in user
             Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun markExerciseAsComplete() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").getReference("userProgress/$userId/dailyExercises/Reading Comprehension")
+            val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
+
+            databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
+                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+                setResult(Activity.RESULT_OK)
+                finish()
+            }.addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to mark exercise as complete: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 
     private fun checkPermission(): Boolean {

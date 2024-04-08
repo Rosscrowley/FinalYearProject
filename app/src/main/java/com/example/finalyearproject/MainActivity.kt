@@ -32,7 +32,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickListener  {
 
@@ -287,6 +290,8 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
         val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app")
             .getReference("userProgress/$userId/dailyExercises")
 
+        val currentDate = getCurrentDate()
+
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -294,12 +299,16 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
                     snapshot.children.forEach { exerciseSnapshot ->
                         Log.d("MainActivity", "Processing snapshot for exercise: ${exerciseSnapshot.key}")
                         val completed = exerciseSnapshot.child("completed").getValue(Boolean::class.java) ?: false
+                        val completionDate = exerciseSnapshot.child("date").getValue(String::class.java)
+
                         Log.d("MainActivity", "Fetched completion status for: ${exerciseSnapshot.key}, Completed: $completed")
 
-
-                        dailyExercises.find { it.name == exerciseSnapshot.key }?.let { exercise ->
-                            Log.d("MainActivity", "Updating status for exercise: ${exercise.name} to $completed")
-                            exercise.completed = completed
+                        if (completed && completionDate == currentDate) {
+                            // Find the matching ExerciseActivity in the list and update its completed status
+                            dailyExercises.find { it.name == exerciseSnapshot.key }?.let { exercise ->
+                                Log.d("MainActivity", "Marking exercise: ${exercise.name} as completed.")
+                                exercise.completed = true
+                            }
                         }
                     }
                     runOnUiThread {
@@ -328,6 +337,11 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
     override fun onResume() {
         super.onResume()
         checkExerciseCompletionStatus()
+    }
+
+    private fun getCurrentDate(): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(Date())
     }
 
 }
