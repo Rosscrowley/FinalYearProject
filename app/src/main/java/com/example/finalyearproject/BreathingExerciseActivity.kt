@@ -25,6 +25,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
     private var timeLeftInMilliseconds: Long = 0
     private var isTimerRunning: Boolean = false
     private var selectedDurationMs: Long = 0
+    private var selectedMinutes: Int = 0
 
     private lateinit var instructionText: TextView
     private lateinit var countdownText: TextView
@@ -113,6 +114,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
             .setTitle("Choose Duration (minutes)")
             .setView(numberPicker)
             .setPositiveButton("OK") { dialog, _ ->
+                selectedMinutes = numberPicker.value
                 selectedDurationMs = numberPicker.value * 60 * 1000L
                 updateCountdownText(selectedDurationMs)
                 dialog.dismiss()
@@ -163,6 +165,9 @@ class BreathingExerciseActivity : AppCompatActivity() {
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
                 Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
 
+                val score = selectedMinutes.toFloat()
+                saveUserExerciseScore(userId, "Breathing1", score)
+
                 setResult(Activity.RESULT_OK)
                 finish()
             }.addOnFailureListener { e ->
@@ -174,5 +179,22 @@ class BreathingExerciseActivity : AppCompatActivity() {
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
+    }
+
+    fun saveUserExerciseScore(userId: String, exerciseId: String, score: Float) {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val exerciseScore = ExerciseScore(score, currentDate)
+
+        val database = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app")
+        val userScoreRef = database.getReference("userScores/$userId/$exerciseId")
+
+        userScoreRef.push().setValue(exerciseScore)
+            .addOnSuccessListener {
+                // Handle success
+                Toast.makeText(this, "score saved!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // Handle failure
+            }
     }
 }

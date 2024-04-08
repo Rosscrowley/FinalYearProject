@@ -71,13 +71,13 @@
 
     <TextView
         android:id="@+id/instructionText"
-        android:layout_width="193dp"
-        android:layout_height="50dp"
+        android:layout_width="241dp"
+        android:layout_height="71dp"
         android:layout_marginBottom="32dp"
         android:text="Breathe In"
-        android:textSize="24sp"
-        android:textStyle="bold"
         android:textAlignment="center"
+        android:textSize="35sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/controlButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.541"
@@ -87,8 +87,8 @@
 
     <LinearLayout
         android:id="@+id/controlButtons"
-        android:layout_width="185dp"
-        android:layout_height="50dp"
+        android:layout_width="303dp"
+        android:layout_height="84dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +100,7 @@
         <!-- Play Button -->
         <ImageButton
             android:id="@+id/playButton"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
             android:onClick="onPlayButtonClick"
             android:src="@drawable/play_image" />
@@ -108,16 +108,16 @@
         <!-- Pause Button -->
         <ImageButton
             android:id="@+id/pauseButton"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="15dp"
             android:onClick="onPauseButtonClick"
             android:src="@drawable/pause_image" />
 
         <!-- Restart Button -->
         <ImageButton
             android:id="@+id/restartButton"
-            android:layout_width="wrap_content"
+            android:layout_width="90dp"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
             android:onClick="onRestartButtonClick"
@@ -127,11 +127,11 @@
 
     <TextView
         android:id="@+id/countdownText"
-        android:layout_width="93dp"
-        android:layout_height="63dp"
+        android:layout_width="116dp"
+        android:layout_height="68dp"
         android:padding="16dp"
         android:text="00:00"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/breathingView"
         app:layout_constraintEnd_toEndOf="parent"
