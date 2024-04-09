@@ -175,7 +175,9 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
     private fun showExercisesInfoDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("How Daily Exercises Work")
-        builder.setMessage(".")
+        builder.setMessage("Every day, you'll receive a personalised set of exercises designed to help you improve your speech and confidence. These exercises are selected based on your progress and activities from previous days.\n\n" +
+                "Complete the exercises to track your progress. Your completion status for each exercise is updated in real-time, so you can see your achievements at a glance. Remember, consistency is key to improvement, so try to complete your daily exercises regularly, which will also earn you XP! \n\n" +
+                "If you complete all exercises for the day, new ones will be available the next day. This ensures you have a fresh set of challenges to keep your learning journey engaging.")
         builder.setPositiveButton("OK") { dialog, which ->
             dialog.dismiss()
         }
@@ -207,35 +209,6 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
             updateRecyclerView(dailyExercises)
         }
     }
-
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun checkForNewDayOrFetchSavedExercises() {
-//        Log.d("MainActivity", "Checking for new day or fetching saved exercises.")
-//        val savedExercises = fetchSavedDailyExercises()
-//        if (savedExercises == null || isNewDay()) {
-//            Log.d("MainActivity", "New day or no saved exercises found, fetching new exercises.")
-//            fetchAndSaveDailyExercises()
-//        } else {
-//            Log.d("MainActivity", "Using saved exercises.")
-//            dailyExercises = savedExercises
-//            updateRecyclerView(savedExercises)
-//            checkExerciseCompletionStatus()
-//        }
-//    }
-//
-//    @RequiresApi(Build.VERSION_CODES.O)
-//    private fun fetchDailyExercises() {
-//        Log.d("MainActivity", "Fetching daily exercises.")
-//        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val exercises = recommendationService.fetchAndRecommendExercises(userId)
-//            Log.d("MainActivity", "Fetched exercises: $exercises")
-//            dailyExercises = exercises
-//            withContext(Dispatchers.Main) {
-//                updateRecyclerView(exercises)
-//            }
-//        }
-//    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchAndSaveDailyExercises() {

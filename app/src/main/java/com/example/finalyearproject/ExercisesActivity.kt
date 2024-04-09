@@ -12,6 +12,7 @@ class ExercisesActivity : AppCompatActivity() {
     private lateinit var breathingCard: CardView
     private lateinit var tonTwistCard: CardView
     private lateinit var syllCountCard: CardView
+    private lateinit var progressiveMuscleCard: CardView
     private lateinit var bottomNavigationView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +26,7 @@ class ExercisesActivity : AppCompatActivity() {
         }
         breathingCard = findViewById(R.id.breathingCard)
         breathingCard.setOnClickListener{
-            val intent = Intent(this@ExercisesActivity, BreathingExerciseActivity::class.java)
+            val intent = Intent(this@ExercisesActivity, BreathingExerciseInfoPage::class.java)
             startActivity(intent)
         }
         tonTwistCard = findViewById(R.id.tongueTwistCard)
@@ -33,10 +34,14 @@ class ExercisesActivity : AppCompatActivity() {
             val intent = Intent(this@ExercisesActivity, ChooseTongueTwisterActivity::class.java)
             startActivity(intent)
         }
-
         syllCountCard = findViewById(R.id.syllableCountingCard)
         syllCountCard.setOnClickListener{
             val intent = Intent(this@ExercisesActivity, SyllCountInfo::class.java)
+            startActivity(intent)
+        }
+        progressiveMuscleCard = findViewById(R.id.muscleExerciseCard)
+        progressiveMuscleCard.setOnClickListener{
+            val intent = Intent(this@ExercisesActivity, ProgressiveMuscleRelaxationInfoPage::class.java)
             startActivity(intent)
         }
 

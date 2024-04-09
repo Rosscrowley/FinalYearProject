@@ -153,6 +153,15 @@
             android:name=".FlexRateTechExerciseActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".BreathingExerciseInfoPage"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".ProgressiveMuscleRelaxationInfoPage"
+            android:exported="true">
+        </activity>
+
 
     </application>
 
