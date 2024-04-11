@@ -167,6 +167,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
 
                 val score = selectedMinutes.toFloat()
                 saveUserExerciseScore(userId, "Breathing1", score)
+                XpManager.awardXpForActivity(userId, "breathingExercise", selectedMinutes)
 
                 setResult(Activity.RESULT_OK)
                 finish()
