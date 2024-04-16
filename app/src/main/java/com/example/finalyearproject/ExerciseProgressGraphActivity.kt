@@ -19,6 +19,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -59,15 +60,31 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val scores = snapshot.children.mapNotNull { it.getValue(ExerciseScore::class.java) }
-                Log.d("ExerciseProgressGraph", "Fetched scores: $scores")
-                callback(scores)
+                val filteredScores = filterScoresByRecentDates(scores)
+                Log.d("ExerciseProgressGraph", "Filtered scores: $filteredScores")
+                callback(filteredScores)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle errors, e.g., show an error message
                 Log.e("ExerciseProgressGraph", "Error fetching scores: ${error.message}")
             }
         })
+    }
+
+    private fun filterScoresByRecentDates(scores: List<ExerciseScore>): List<ExerciseScore> {
+        val thirtyDaysAgo = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, -30)
+        }.time
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        return scores.filter {
+            try {
+                val scoreDate = dateFormat.parse(it.date)
+                scoreDate != null && !scoreDate.before(thirtyDaysAgo)
+            } catch (e: ParseException) {
+                false
+            }
+        }
     }
 
     private fun populateLineChart(scores: List<ExerciseScore>) {

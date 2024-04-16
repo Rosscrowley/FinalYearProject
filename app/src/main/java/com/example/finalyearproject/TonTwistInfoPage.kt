@@ -15,12 +15,14 @@ class TonTwistInfoPage  : AppCompatActivity() {
         nextButton.setOnClickListener {
             val intent = Intent(this@TonTwistInfoPage, ChooseTongueTwisterActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@TonTwistInfoPage, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
 

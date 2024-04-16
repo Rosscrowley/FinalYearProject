@@ -15,12 +15,14 @@ class ProgressiveMuscleRelaxationInfoPage : AppCompatActivity()  {
         nextButton.setOnClickListener {
             val intent = Intent(this@ProgressiveMuscleRelaxationInfoPage, ProgressiveMuscleExerciseActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@ProgressiveMuscleRelaxationInfoPage, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }

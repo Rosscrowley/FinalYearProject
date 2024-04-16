@@ -15,12 +15,14 @@ class ReadingExerInfo : AppCompatActivity()  {
         nextButton.setOnClickListener {
             val intent = Intent(this@ReadingExerInfo, ChooseReadingTopicActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@ReadingExerInfo, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
 

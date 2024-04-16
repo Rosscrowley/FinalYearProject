@@ -15,12 +15,15 @@ class SyllCountInfo : AppCompatActivity() {
         nextButton.setOnClickListener {
             val intent = Intent(this@SyllCountInfo, SyllCountingExerciseActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@SyllCountInfo, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
+
         }
 
 

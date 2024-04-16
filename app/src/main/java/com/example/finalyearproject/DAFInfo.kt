@@ -15,12 +15,14 @@ class DAFInfo : AppCompatActivity() {
         nextButton.setOnClickListener {
             val intent = Intent(this@DAFInfo, ReadingExerInfo::class.java)
             startActivity(intent)
+            finish()
         }
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
             val intent = Intent(this@DAFInfo, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
 

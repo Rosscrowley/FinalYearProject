@@ -19,8 +19,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,6 +42,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var questionCountTextView: TextView
     private lateinit var closeButton: ImageButton
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_syl_count_exercise)
@@ -150,7 +154,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
     }
 
     fun fetchWords() {
-        Thread {
+        coroutineScope.launch {
             val urls = listOf(
                 "https://www.syllablecount.com/syllables/words/1_syllable_words",
                 "https://www.syllablecount.com/syllables/words/2_syllable_words",
@@ -160,30 +164,31 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
 
             val allWords = mutableListOf<WordData>()
 
-            urls.forEach { url ->
-                try {
-                    val doc: Document = Jsoup.connect(url).get()
-                    val syllableCount = url.split("/").last().split("_")[0].toInt()
-                    val words = doc.select("table[id=ctl00_ContentPane_DataList1] a[href]")
-                        .mapNotNull { it.text().trim() }
-                        .map {
-                            Log.d("WordScraping", "Word: $it, Syllables: $syllableCount, URL: $url")
-                            WordData(it, syllableCount) }
-
-                    allWords.addAll(words)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    // Handle error
+            // Switch to IO Dispatcher for network operation
+            withContext(Dispatchers.IO) {
+                urls.forEach { url ->
+                    try {
+                        val doc = Jsoup.connect(url).get()
+                        val syllableCount = url.split("/").last().split("_")[0].toInt()
+                        val words = doc.select("table[id=ctl00_ContentPane_DataList1] a[href]")
+                            .mapNotNull { it.text().trim() }
+                            .map {
+                                Log.d("WordScraping", "Word: $it, Syllables: $syllableCount, URL: $url")
+                                WordData(it, syllableCount)
+                            }
+                        allWords.addAll(words)
+                    } catch (e: IOException) {
+                        Log.e("WordScraping", "Error fetching words from $url", e)
+                        // Optionally handle the error more gracefully here
+                    }
                 }
             }
 
-            runOnUiThread {
-                generateQuizQuestions(allWords)
-                loadQuestion()
-                progressBar.visibility = View.GONE
-            }
-
-        }.start()
+            // Back on the main thread to update UI
+            generateQuizQuestions(allWords)
+            loadQuestion()
+            progressBar.visibility = View.GONE
+        }
     }
     data class WordData(val word: String, val syllableCount: Int)
     private fun checkAnswer(selectedAnswer: String) {
