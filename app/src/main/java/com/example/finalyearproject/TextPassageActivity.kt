@@ -356,12 +356,13 @@ class TextPassageActivity : AppCompatActivity() {
 
 
     private fun getPassagesForCategory(categoryName: String?, callback: (List<String>) -> Unit) {
-        val supportedCategories = listOf("sport", "business", "entertainment", "culture")
+        val supportedCategories = listOf("sport", "business", "entertainment", "culture", "news")
 
         if (categoryName in supportedCategories) {
             fetchHeadlines(categoryName ?: "sport", callback)
         } else {
             // Your existing Firebase code
+            progressBar.visibility = View.GONE
             val databaseReference = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").reference
             val passagesReference = databaseReference.child("reading_texts").child(categoryName ?: "")
 

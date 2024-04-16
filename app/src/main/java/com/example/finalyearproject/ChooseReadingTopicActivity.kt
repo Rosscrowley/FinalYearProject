@@ -42,9 +42,9 @@ class ChooseReadingTopicActivity : AppCompatActivity() {
             UserAgeUtil.getUserAgeCategory(userId) { category ->
                 // Update topics list based on age category
                 topics = if (category == "Kids Topics") {
-                    listOf("Animals", "Space", "Fairy Tales", "Nature") // Example kids topics
+                    listOf("Animals", "Space", "Food", "Nature") // Example kids topics
                 } else {
-                    listOf("Food", "history", "news", "sport", "entertainment", "business", "culture")
+                    listOf("news", "sport", "entertainment", "business", "culture")
                 }
                 setupRecyclerView()
             }
