@@ -1,5 +1,6 @@
 package com.example.finalyearproject
 
+import android.content.Intent
 import android.content.res.Resources
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -30,9 +31,15 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var waveformView: WaveformView
     private lateinit var horizontalScrollView: HorizontalScrollView
+    private lateinit var closeButton: ImageButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_audio)
+
+        closeButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            startActivity(Intent(this@AudioPlayerActivity, WaveAnalysisPageActivity::class.java))
+        }
 
         waveformView = findViewById(R.id.waveformId)
 

@@ -1,9 +1,11 @@
 package com.example.finalyearproject
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -27,10 +29,16 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
     private var countDownTimer: CountDownTimer? = null
     private val muscleGroups = listOf("Cheek and Jaw", "Forehead and Eyebrows", "Fists and Arms", "Feet and Legs", "Shoulders")
     private var currentGroupIndex = 0
+    private lateinit var closeButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_progressive_muscle_exercise)
+
+        closeButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            startActivity(Intent(this@ProgressiveMuscleExerciseActivity, ExercisesActivity::class.java))
+        }
 
         progressBar = findViewById(R.id.progressBar)
         emojiFace = findViewById(R.id.emojiFace)

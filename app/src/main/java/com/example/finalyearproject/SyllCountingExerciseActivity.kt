@@ -8,6 +8,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -37,9 +38,15 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
     private var correctAnswersCount: Int = 0
     private lateinit var progressBar: ProgressBar
     private lateinit var questionCountTextView: TextView
+    private lateinit var closeButton: ImageButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_syl_count_exercise)
+
+        closeButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            startActivity(Intent(this@SyllCountingExerciseActivity, ExercisesActivity::class.java))
+        }
 
         nextButton = findViewById(R.id.next_button)
         questionText = findViewById(R.id.question_text)

@@ -1,5 +1,6 @@
 package com.example.finalyearproject
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -45,6 +46,7 @@ class CompareAudioWavesActivity : AppCompatActivity() {
     private val sampleRate = 44100 // Example sample rate
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+    private lateinit var closeButton: ImageButton
     private val bufferSizeInBytes = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1
@@ -54,6 +56,11 @@ class CompareAudioWavesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_compare_audio_waves)
+
+        closeButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            startActivity(Intent(this@CompareAudioWavesActivity, WaveAnalysisPageActivity::class.java))
+        }
 
         horizontalScrollView = findViewById(R.id.horizontalScrollViewCorrectWave)
         textToSpeechService = TextToSpeechService(this)

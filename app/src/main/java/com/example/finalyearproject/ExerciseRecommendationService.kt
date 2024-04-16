@@ -39,7 +39,7 @@ class ExerciseRecommendationService(private val exerciseRepository: ExerciseRepo
                 val averageScore = scores.map { it.score }.average()
                 val priority = (1.0 / (frequency + 1)) + (1.0 - averageScore / 5.0)
 
-                Log.d("ExerciseRec", "Exercise: $exerciseId, Frequency past week: $frequency, Average Score: $averageScore, Priority: $priority")
+//                Log.d("ExerciseRec", "Exercise: $exerciseId, Frequency past week: $frequency, Average Score: $averageScore, Priority: $priority")
 
                 priority
             }
@@ -62,13 +62,13 @@ class ExerciseRecommendationService(private val exerciseRepository: ExerciseRepo
             } else null
         }
 
-        Log.d("ExerciseRecService", "All Exercises: $allExercises")
-        Log.d("ExerciseRecService", "User's Exercise Scores: $userExerciseScores")
-        Log.d("ExerciseRecService", "Untried Exercises: $untriedExercises")
-        Log.d("ExerciseRecService", "Recommendations before prioritization: $recommendations")
-
-
-        Log.d("ExerciseRecService", "Final Recommended Exercises: $recommendedExercises")
+//        Log.d("ExerciseRecService", "All Exercises: $allExercises")
+//        Log.d("ExerciseRecService", "User's Exercise Scores: $userExerciseScores")
+//        Log.d("ExerciseRecService", "Untried Exercises: $untriedExercises")
+//        Log.d("ExerciseRecService", "Recommendations before prioritization: $recommendations")
+//
+//
+//        Log.d("ExerciseRecService", "Final Recommended Exercises: $recommendedExercises")
 
         return recommendedExercises
     }
