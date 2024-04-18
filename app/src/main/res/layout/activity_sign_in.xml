@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/appColourBG">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailLayout"
@@ -55,6 +57,7 @@
         android:text="Sign In"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:background="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -72,5 +75,16 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="252dp"
+        android:layout_height="295dp"
+        android:layout_marginBottom="86dp"
+        app:layout_constraintBottom_toBottomOf="@+id/emailLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/speakease_high_resolution_logo_transparent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

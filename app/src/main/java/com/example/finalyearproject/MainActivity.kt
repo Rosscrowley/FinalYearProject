@@ -131,18 +131,17 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_logout -> {
-                performLogout()
+            R.id.action_profile -> {
+                navigateProfile()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun performLogout() {
-        FirebaseAuth.getInstance().signOut()
+    private fun navigateProfile() {
 
-       val intent = Intent(this, SignInActivity::class.java)
+        val intent = Intent(this, ProfileActivity::class.java)
         startActivity(intent)
         finish()
     }

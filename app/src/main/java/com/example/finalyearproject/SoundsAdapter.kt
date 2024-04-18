@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
@@ -14,7 +13,6 @@ class SoundsAdapter(private val soundsList: List<SoundItem>) : RecyclerView.Adap
         val checkBox: CheckBox = itemView.findViewById(R.id.checkBox_sound)
         val soundTextView: TextView = itemView.findViewById(R.id.textView_sound)
         val examplesTextView: TextView = itemView.findViewById(R.id.textView_examples)
-        val playButton: ImageButton = itemView.findViewById(R.id.imageButton_play)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SoundViewHolder {
@@ -29,11 +27,6 @@ class SoundsAdapter(private val soundsList: List<SoundItem>) : RecyclerView.Adap
         holder.checkBox.isChecked = soundItem.isSelected
         holder.soundTextView.text = soundItem.sound
         holder.examplesTextView.text = soundItem.examples
-
-        // Set up a click listener for the play button
-        holder.playButton.setOnClickListener {
-            // TODO: Play the sound for the item
-        }
 
         // Handle checkbox changes
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->

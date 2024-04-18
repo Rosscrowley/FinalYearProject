@@ -8,8 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
 
 class SurveyActivity : AppCompatActivity() {
 
@@ -17,6 +21,22 @@ class SurveyActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var database: DatabaseReference
     private lateinit var soundsRecyclerView: RecyclerView
+    private lateinit var soundsAdapter: SoundsAdapter
+    private var soundsList = mutableListOf(
+        SoundItem("HH", "House, Hot"),
+        SoundItem("NG", "SiNG, loNG"),
+        SoundItem("AA", "fAther, smArt"),
+        SoundItem("AY", "mY, whY"),
+        SoundItem("OY", "bOY, tOY"),
+        SoundItem("CH", "CHair, CHina"),
+        SoundItem("JH", "Just, Gym"),
+        SoundItem("EY", "sAY, EIght"),
+        SoundItem("AE", "At, jAcket"),
+        SoundItem("UW", "yOU, fOOd"),
+        SoundItem("S", "Say, boSS"),
+        SoundItem("B", "Buy, Big"),
+        SoundItem("Z", "Zoo, buZZ")
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,63 +44,72 @@ class SurveyActivity : AppCompatActivity() {
 
         soundsRecyclerView = findViewById(R.id.soundsRecyclerView)
         soundsRecyclerView.layoutManager = LinearLayoutManager(this)
+        soundsAdapter = SoundsAdapter(soundsList)
+        soundsRecyclerView.adapter = soundsAdapter
 
-        val soundsList = listOf(
-            SoundItem("HH", "House, Hot"),
-            SoundItem("NG", "SiNG, loNG"),
-            SoundItem("AA", "fAther, smArt"),
-            SoundItem("AY", "mY, whY"),
-            SoundItem("OY", "bOY, tOY"),
-            SoundItem("CH", "CHair, CHina"),
-            SoundItem("JH", "Just, Gym"),
-            SoundItem("EY", "sAY, EIght"),
-            SoundItem("AE", "At, jAcket"),
-            SoundItem("UW", "yOU, fOOd"),
-            SoundItem("S", "Say, boSS"),
-            SoundItem("B", "Buy, Big"),
-            SoundItem("Z", "Zoo, buZZ"),
-
-
-        )
-
-        // Set the adapter for the RecyclerView
-        soundsRecyclerView.adapter = SoundsAdapter(soundsList)
-
-        // Initialize Firebase Auth and Database Reference
         firebaseAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").reference
+        database =
+            FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app").reference
+
+        fetchExistingSounds()
 
         doneButton = findViewById(R.id.button_done)
-        doneButton.setOnClickListener{
-
+        doneButton.setOnClickListener {
             val selectedSounds = soundsList.filter { it.isSelected }.map { it.sound }
-
-
             saveSelectedSoundsToDatabase(selectedSounds)
         }
+    }
+
+    private fun fetchExistingSounds() {
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId != null) {
+            database.child("users").child(userId).child("feared_sounds")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val existingSounds = snapshot.getValue<List<String>>() ?: emptyList()
+                        updateSoundsList(existingSounds)
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Toast.makeText(
+                            this@SurveyActivity,
+                            "Failed to fetch data: ${databaseError.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+        }
+    }
+
+    private fun updateSoundsList(existingSounds: List<String>) {
+        soundsList.forEach { item ->
+            item.isSelected = existingSounds.contains(item.sound)
+        }
+        soundsAdapter.notifyDataSetChanged()
     }
 
     private fun saveSelectedSoundsToDatabase(selectedSounds: List<String>) {
         val userId = firebaseAuth.currentUser?.uid
         userId?.let { uid ->
-            // Assuming you want to store the selected sounds under the "feared_sounds" node
-            database.child("users").child(uid).child("firstLogin").setValue(false).addOnSuccessListener {
-                database.child("users").child(uid).child("feared_sounds").setValue(selectedSounds)
-                    .addOnSuccessListener {
-                        // Handle success
-                        Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish() // Finish this activity so the user can't go back
-                    }
-                    .addOnFailureListener { e ->
-                        // Handle the error
-                        Toast.makeText(this, "Error saving sounds: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-            }
-
+            database.child("users").child(uid).child("firstLogin").setValue(false)
+                .addOnSuccessListener {
+                    database.child("users").child(uid).child("feared_sounds")
+                        .setValue(selectedSounds)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Saved successfully", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(this, MainActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(
+                                this,
+                                "Error saving sounds: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
         }
-
     }
 }
 

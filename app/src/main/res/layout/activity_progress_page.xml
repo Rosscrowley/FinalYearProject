@@ -9,7 +9,7 @@
         android:id="@+id/toolbar"
         android:layout_width="423dp"
         android:layout_height="67dp"
-        android:background="@color/gold"
+        android:background="@color/appColour"
         app:layout_constraintBottom_toTopOf="@+id/tvProgressTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

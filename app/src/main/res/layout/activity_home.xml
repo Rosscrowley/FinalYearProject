@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F8F8"
+    android:background="@color/appColourBG"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="413dp"
         android:layout_height="68dp"
-        android:background="@color/gold"
+        android:background="@color/appColour"
         app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -21,10 +21,23 @@
 
       </androidx.appcompat.widget.Toolbar>
 
+    <ImageView
+        android:id="@+id/appLogo"
+        android:layout_width="401dp"
+        android:layout_height="116dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/nestedScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:srcCompat="@drawable/speakease_high_resolution_logo_transparent" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
-        android:layout_width="408dp"
-        android:layout_height="600dp"
+        android:layout_width="410dp"
+        android:layout_height="551dp"
+        android:background="@color/appColourBG"
         app:layout_constraintBottom_toTopOf="@id/nav_view"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -57,19 +70,19 @@
                 android:layout_width="335dp"
                 android:layout_height="95dp"
                 android:layout_margin="25dp"
+                android:background="@color/appColourBG"
                 android:text="Welcome"
                 android:textAlignment="center"
-                android:textSize="25dp"
-                android:background="@drawable/border"/>
+                android:textSize="25dp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/appColour"
                 android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/streakText"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:background="@drawable/border">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/streakText">
 
                 <TextView
                     android:id="@+id/dailyExercisesText"
@@ -77,23 +90,23 @@
                     android:layout_height="wrap_content"
                     android:text="Daily Exercises"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/infoIcon"
-                    app:layout_constraintHorizontal_chainStyle="packed"/>
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/infoIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_info_24"
                     android:contentDescription="info_description"
-                    app:layout_constraintTop_toTopOf="@id/dailyExercisesText"
+                    android:src="@drawable/ic_info_24"
                     app:layout_constraintBottom_toBottomOf="@id/dailyExercisesText"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/dailyExercisesText"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toTopOf="@id/dailyExercisesText" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -102,10 +115,10 @@
                 android:id="@+id/dailyExercisesRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
+                android:background="@color/appColourBG"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/linearLayout"
-                android:background="@drawable/border"/>
+                app:layout_constraintTop_toBottomOf="@id/linearLayout" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/pronunTest"

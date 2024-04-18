@@ -1,5 +1,6 @@
 package com.example.finalyearproject
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -33,11 +34,12 @@ object XpManager {
                 return Transaction.success(mutableData)
             }
 
-            override fun onComplete(
-                databaseError: DatabaseError?,
-                b: Boolean,
-                dataSnapshot: DataSnapshot?
-            ) {
+            override fun onComplete(databaseError: DatabaseError?, b: Boolean, dataSnapshot: DataSnapshot?) {
+                if (databaseError != null) {
+                    Log.e("updateUserXp", "Failed to update XP: ${databaseError.message}")
+                } else {
+                    Log.d("updateUserXp", "XP successfully updated.")
+                }
             }
         })
     }

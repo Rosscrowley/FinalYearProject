@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -43,10 +44,13 @@ class DailyExerciseAdapter(
         private val nameTextView: TextView = itemView.findViewById(R.id.exerciseName)
         private val completionStatusTextView: TextView = itemView.findViewById(R.id.textView5)
         private val startButton: Button = itemView.findViewById(R.id.startButton)
+        private val exerciseIcon: ImageView = itemView.findViewById(R.id.exerciseIcon)
+
 
         fun bind(exercise: ExerciseActivity, context: Context, clickListener: ExerciseClickListener) {
             Log.d("ExerciseViewHolder", "Binding data for exercise: ${exercise.name}, Completed: ${exercise.completed}")
             nameTextView.text = exercise.name
+            exerciseIcon.setImageResource(getImageResource(exercise.name))
 
 
             if (exercise.completed) {
@@ -59,6 +63,18 @@ class DailyExerciseAdapter(
 
             startButton.setOnClickListener {
                 clickListener.onExerciseStart(exercise.name, exercise.activityClassName ?: "")
+            }
+        }
+
+        private fun getImageResource(exerciseName: String): Int {
+            return when (exerciseName) {
+                "Breathing Exercise" -> R.drawable.breathing_exercises
+                "Reading Comprehension" -> R.drawable.reading_exercise
+                "Tongue Twisters" -> R.drawable.tongue_twister_exercise
+                "Syllable Counting" -> R.drawable.syllable_counting_exercise
+                "Flexible Rate Technique" -> R.drawable.flex_rate_exercise
+                "Progressive Muscle Exercise" -> R.drawable.muscle_exercise
+                else -> R.drawable.tongue_twister_exercise // Fallback icon
             }
         }
     }

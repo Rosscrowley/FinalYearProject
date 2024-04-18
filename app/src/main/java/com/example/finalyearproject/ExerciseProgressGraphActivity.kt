@@ -104,7 +104,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         Log.d("ExerciseProgressGraph", "Plotting entries: $entries")
 
         dataSet.setDrawCircles(true)
-        dataSet.setCircleColor(R.color.gold) // Set the color of the circles
+        dataSet.setCircleColor(R.color.appColour) // Set the color of the circles
         dataSet.circleRadius = 5f // Set the radius of the circles
 
         val lineData = LineData(dataSet)

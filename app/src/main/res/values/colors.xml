@@ -7,7 +7,6 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="gold">#EDB303</color>
     <color name="light_blue">#C4D8E6</color>
     <color name="strokeColor">#1E88E5</color>
     <color name="gray">#ECECEC</color>
@@ -16,5 +15,7 @@
     <color name="opaqueBG">#61000000</color>
     <color name="DEIncomplete">#3EF10404</color>
     <color name="DEComplete">#68E66D</color>
-    <color name="yellow">#FFC801</color>
+    <color name="appColour">#49beb7</color>
+    <color name="appColour2">#085f63</color>
+    <color name="appColourBG">#BFE6E4</color>
 </resources>
