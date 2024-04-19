@@ -13,6 +13,7 @@ class ExercisesActivity : AppCompatActivity() {
     private lateinit var tonTwistCard: CardView
     private lateinit var syllCountCard: CardView
     private lateinit var progressiveMuscleCard: CardView
+    private lateinit var flexRateCard: CardView
     private lateinit var bottomNavigationView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +45,11 @@ class ExercisesActivity : AppCompatActivity() {
             val intent = Intent(this@ExercisesActivity, ProgressiveMuscleRelaxationInfoPage::class.java)
             startActivity(intent)
         }
-
+        flexRateCard = findViewById(R.id.flexRTCard)
+        flexRateCard.setOnClickListener{
+            val intent = Intent(this@ExercisesActivity, FlexRateInfo::class.java)
+            startActivity(intent)
+        }
 
         bottomNavigationView = findViewById(R.id.nav_view)
         bottomNavigationView.selectedItemId = R.id.menu_item_exercise

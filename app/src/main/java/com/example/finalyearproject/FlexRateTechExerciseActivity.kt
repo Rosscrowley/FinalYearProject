@@ -81,7 +81,7 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
-            val intent = Intent(this@FlexRateTechExerciseActivity, ExerciseActivity::class.java)
+            val intent = Intent(this@FlexRateTechExerciseActivity, ExercisesActivity::class.java)
             startActivity(intent)
         }
 

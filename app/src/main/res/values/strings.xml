@@ -7,4 +7,6 @@
     <string name="breathing_exercise_info">Diaphragmatic breathing can be used as a tool to relax articulators and reduce stress.\n\nFollow the onscreen instructions. Sit comfortably and place one hand on your chest and the other on your belly. Breathe in slowly through your nose, ensuring your belly rises more than your chest. Exhale slowly through the mouth.</string>
     <string name="progressive_muscle_relaxation_info">Progressive muscle relaxation reduces overall muscle tension and can help alleviate the physical manifestations of stuttering, like facial tics. \n\nFind a quiet and comfortable place, and focus on gradually tensing and then relaxing each muscle group. </string>
     <string name="cycle_text">%1$d/%2$d</string>
+    <string name="flex_rate_info">Flexible rate is slowing down the production of a word, especially the first syllable.\n\nThis technique helps in allowing more time for language planning and motor execution</string>
+    <string name="flex_rate_ex_info">Speak aloud the text on the screen, stretching the vowel sound in the first syllable of the word.\n\nThis will be a guided practice session with a voice to guide you through each example.</string>
 </resources>
