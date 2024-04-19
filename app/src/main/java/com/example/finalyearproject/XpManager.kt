@@ -17,6 +17,7 @@ object XpManager {
             "syllableCounting" -> durationOrIntensity * STANDARD_XP
             "tongueTwisterExercise" -> durationOrIntensity * STANDARD_XP
             "ProgressiveMuscle1" -> durationOrIntensity * STANDARD_XP
+           "FlexibleRateTechnique" -> durationOrIntensity * STANDARD_XP
             else -> 0
         }
 

@@ -39,6 +39,7 @@ import java.util.Locale
      private var text: String? = null
      private var textToSpeechService: TextToSpeechService? = null
      private lateinit var visualizerView: VisualizerView
+     private lateinit var googleTextToSpeechService: GoogleTextToSpeechService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_speech)
@@ -51,15 +52,21 @@ import java.util.Locale
         //buttonListen!!.isEnabled = false
 
         buttonListen.setOnClickListener(View.OnClickListener {
-            text = enteredText.text.toString()
-            TextToSpeechTask().execute(text)
+           // text = enteredText.text.toString()
+            //TextToSpeechTask().execute(text)
+            synthesizeCustomText()
         })
 
         val btn = findViewById<Button>(R.id.practiceB)
         btn.setOnClickListener {
 
-            askSpeechInput()
+            //askSpeechInput()
+
         }
+
+
+        googleTextToSpeechService = GoogleTextToSpeechService(this)
+
 
     }
 
@@ -153,16 +160,13 @@ import java.util.Locale
 
      private fun playAudio(audioData: ByteArray) {
          try {
-             // Check if MediaPlayer is currently playing, and stop it if needed
              if (mediaPlayer != null && mediaPlayer!!.isPlaying) {
                  mediaPlayer!!.stop()
                  mediaPlayer!!.reset()
              }
              val tempAudioFile = saveToTempFile(audioData)
-             // Initialize MediaPlayer
              mediaPlayer = MediaPlayer()
 
-             // Set audio attributes to ensure proper playback on different Android versions
              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                  mediaPlayer!!.setAudioAttributes(
                      AudioAttributes.Builder()
@@ -174,16 +178,11 @@ import java.util.Locale
                  mediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
              }
 
-             // Set the audio data to MediaPlayer
              mediaPlayer!!.setDataSource(tempAudioFile.absolutePath)
-
-             // Prepare and start playback
              mediaPlayer!!.prepare()
              mediaPlayer!!.start()
-
-             // Set a listener to handle when playback completes
              mediaPlayer!!.setOnCompletionListener {
-                 // Handle any post-completion actions if needed
+                 // Optionally handle completion here
              }
          } catch (e: IOException) {
              Log.e("playAudio", "Error playing audio", e)
@@ -204,6 +203,25 @@ import java.util.Locale
          if (mediaPlayer != null) {
              mediaPlayer!!.release()
              mediaPlayer = null
+         }
+     }
+
+     private fun synthesizeCustomText() {
+
+         val ssml = """
+        <speak>
+            <prosody rate="x-slow" pitch="-2st" volume="loud">obbbb</prosody>
+            jective 
+        </speak>
+    """.trimIndent()
+         googleTextToSpeechService.synthesizeText(ssml) { audioBytes ->
+             runOnUiThread {
+                 if (audioBytes != null) {
+                     playAudio(audioBytes)
+                 } else {
+                     Toast.makeText(this, "Failed to synthesize speech", Toast.LENGTH_SHORT).show()
+                 }
+             }
          }
      }
 }

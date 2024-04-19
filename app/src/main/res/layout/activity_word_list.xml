@@ -32,7 +32,7 @@
                 android:id="@+id/toolbarTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Choose a Word to Practice Pronouncing!!"
+                android:text="Choose a Word to Practice Pronouncing"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"

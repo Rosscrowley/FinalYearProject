@@ -80,6 +80,7 @@ dependencies {
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation ("com.arthenica:mobile-ffmpeg-full:4.4.LTS")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
