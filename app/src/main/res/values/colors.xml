@@ -18,4 +18,10 @@
     <color name="appColour">#49beb7</color>
     <color name="appColour2">#085f63</color>
     <color name="appColourBG">#BFE6E4</color>
+    <color name="pcRed">#FF6347</color>
+    <color name="pcBlue">#1E90FF</color>
+    <color name="pcGreen">#32CD32</color>
+    <color name="pcYellow">#FFD700</color>
+    <color name="pcPurple">#6A5ACD</color>
+    <color name="pcPink">#FF69B4</color>
 </resources>

@@ -83,6 +83,7 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
         closeButton.setOnClickListener {
             val intent = Intent(this@FlexRateTechExerciseActivity, ExercisesActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         googleTextToSpeechService = GoogleTextToSpeechService(this)
@@ -210,9 +211,33 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 timerTextView.text = " 00:00s"
-                markExerciseAsComplete()
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                if(userId!= null) {
+                 val score = currentIndex.toFloat()
+                    saveUserExerciseScore(userId, "FlexibleRateTechnique1", score)
+                }
             }
         }
         countDownTimer.start()
+    }
+
+
+    fun saveUserExerciseScore(userId: String, exerciseId: String, score: Float) {
+        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val exerciseScore = ExerciseScore(score, currentDate)
+
+        val database = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app")
+        val userScoreRef = database.getReference("userScores/$userId/$exerciseId")
+
+        userScoreRef.push().setValue(exerciseScore)
+            .addOnSuccessListener {
+
+                markExerciseAsComplete()
+                // Handle success
+                Toast.makeText(this, "score saved!", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // Handle failure
+            }
     }
 }
