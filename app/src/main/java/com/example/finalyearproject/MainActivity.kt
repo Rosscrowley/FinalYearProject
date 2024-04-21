@@ -4,6 +4,7 @@ import DailyExerciseAdapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -17,9 +18,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.common.reflect.TypeToken
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +45,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickListener  {
 
@@ -48,6 +58,7 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
     private lateinit var recommendationService: ExerciseRecommendationService
     private val exerciseRepository = ExerciseRepository()
     private var dailyExercises: List<ExerciseActivity> = listOf()
+    private lateinit var barChart: BarChart
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,9 +130,11 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
         recommendationService = ExerciseRecommendationService(exerciseRepository)
 
 
-//        Example usage
-//        fetchRecommendations()
         initializeOrFetchExercises()
+        barChart = findViewById(R.id.xpBarchart)
+        setupBarChart()
+        addGoalLine(10000f)
+        fetchXpDataAndUpdateChart()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -314,6 +327,85 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
+    }
+
+    private fun setupBarChart() {
+        barChart.apply {
+            description.text = "Weekly XP Progress"
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = IndexAxisValueFormatter(arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+                granularity = 1f
+                isGranularityEnabled = true
+            }
+            axisLeft.apply {
+                axisMinimum = 0f
+                granularity = 2000f // set increments to 2000
+                isGranularityEnabled = true
+                axisMaximum = 12000f
+            }
+            axisRight.isEnabled = false
+        }
+    }
+
+    private fun addGoalLine(goal: Float) {
+        val goalLine = LimitLine(goal, "Goal: $goal XP").apply {
+            lineWidth = 4f
+            lineColor = Color.RED // Ensure the color stands out
+            enableDashedLine(10f, 10f, 0f)
+            textColor = Color.RED
+            textSize = 12f
+            labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+        }
+        barChart.axisLeft.addLimitLine(goalLine)
+    }
+
+    private fun updateBarChart(data: List<BarEntry>) {
+        val dataSet = BarDataSet(data, "Daily XP")
+
+        val barColor = ContextCompat.getColor(this, R.color.appColour2)
+        dataSet.color = barColor
+
+        val data = BarData(dataSet)
+        barChart.data = data
+        barChart.notifyDataSetChanged()
+        barChart.invalidate()
+    }
+    private fun fetchXpDataAndUpdateChart() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let { uid ->
+            val userXpRef = FirebaseDatabase.getInstance("https://final-year-project-6d217-default-rtdb.europe-west1.firebasedatabase.app")
+                .getReference("users/$uid/dailyXp")
+
+            userXpRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val xpData = mutableListOf<BarEntry>()
+                    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
+
+                    calendar.firstDayOfWeek = Calendar.MONDAY
+                    calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+                    val daysOfWeek = IntArray(7) // Array to store XP for each day of the week
+
+                    for (i in 0 until 7) {
+                        val date = formatter.format(calendar.time)
+                        val xpValue = snapshot.child(date).getValue(Int::class.java) ?: 0
+                        Log.d("Fetching Data", "Date: $date, XP: $xpValue")
+                        daysOfWeek[i] = xpValue
+                        xpData.add(BarEntry(i.toFloat(), xpValue.toFloat()))
+
+                        calendar.add(Calendar.DATE, 1)  // Move to the next day
+                    }
+
+                    updateBarChart(xpData)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("MainActivity", "Failed to fetch XP data", error.toException())
+                }
+            })
+        }
     }
 
 }
