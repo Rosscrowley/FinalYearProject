@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
@@ -48,7 +49,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
 
         if (userId != null) {
             fetchUserScores(userId, exerciseId) { scores ->
-                populateLineChart(scores)
+                populateLineChart(scores, exerciseId)
             }
         }
     }
@@ -87,7 +88,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         }
     }
 
-    private fun populateLineChart(scores: List<ExerciseScore>) {
+    private fun populateLineChart(scores: List<ExerciseScore>, exerciseId: String) {
         // Group scores by date and calculate the average score for each date
         val averageScoresByDate = scores
             .groupBy { it.date }
@@ -106,6 +107,22 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         dataSet.setDrawCircles(true)
         dataSet.setCircleColor(R.color.appColour) // Set the color of the circles
         dataSet.circleRadius = 5f // Set the radius of the circles
+
+
+        val yAxis = scoreChart.axisLeft
+        scoreChart.axisRight.isEnabled = false
+        when (exerciseId) {
+            "Reading1", "TongueTwister1" -> {
+                yAxis.axisMaximum = 5f
+                yAxis.axisMinimum = 1f
+                yAxis.granularity = 1f
+            }
+            "SyllableCounting1" -> {
+                yAxis.axisMaximum = 10f
+                yAxis.axisMinimum = 1f
+                yAxis.granularity = 1f
+            }
+        }
 
         val lineData = LineData(dataSet)
         scoreChart.data = lineData
@@ -135,15 +152,17 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
 
     private fun convertXValueToDate(xValue: Float): String {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        format.timeZone = TimeZone.getTimeZone("Europe/Brussels")
         val date = Date(xValue.toLong())
         return format.format(date)
     }
     private fun convertDateToXValue(dateStr: String): Float {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        format.timeZone = TimeZone.getTimeZone("Europe/Brussels")
         val date = format.parse(dateStr) ?: return 0f
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
         calendar.time = date
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, 12)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
         calendar.set(Calendar.MILLISECOND, 0)
@@ -151,7 +170,11 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
     }
 
     class DateAxisValueFormatter : ValueFormatter() {
-        private val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+        private val dateFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
+
+        init {
+            dateFormat.timeZone = TimeZone.getTimeZone("Europe/Brussels") // Consistent time zone
+        }
 
         override fun getFormattedValue(value: Float): String {
             val date = Date(value.toLong())

@@ -143,7 +143,7 @@ class TextPassageActivity : AppCompatActivity() {
             }
             .setNegativeButton("Discard") { dialog, which ->
                 Log.d("VoiceRecordListActivity", "Discarding recording.")
-                // Optionally delete the temporary file or handle the discard action
+                showRatingDialog()
                 dialog.dismiss()
             }
             .create()
