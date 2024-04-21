@@ -50,6 +50,17 @@ class ExerciseRecommendationService(private val exerciseRepository: ExerciseRepo
                 .take(maxRecommendations - recommendations.size))
         }
 
+        while (recommendations.size < maxRecommendations) {
+            // Randomly select from all exercises, excluding those already recommended
+            val remainingExercises = allExercises.keys - recommendations
+            val randomExercise = remainingExercises.randomOrNull()
+            if (randomExercise != null) {
+                recommendations.add(randomExercise)
+            } else {
+                break
+            }
+        }
+
         // Convert exercise IDs to names for the final recommendation list
         val recommendedExerciseNames = recommendations.mapNotNull { allExercises[it] }
 
@@ -61,14 +72,13 @@ class ExerciseRecommendationService(private val exerciseRepository: ExerciseRepo
                 ExerciseActivity("id_placeholder", exerciseName, className)
             } else null
         }
-
-//        Log.d("ExerciseRecService", "All Exercises: $allExercises")
-//        Log.d("ExerciseRecService", "User's Exercise Scores: $userExerciseScores")
-//        Log.d("ExerciseRecService", "Untried Exercises: $untriedExercises")
-//        Log.d("ExerciseRecService", "Recommendations before prioritization: $recommendations")
 //
-//
-//        Log.d("ExerciseRecService", "Final Recommended Exercises: $recommendedExercises")
+        Log.d("ExerciseRec", "All Exercises: $allExercises")
+        Log.d("ExerciseRec", "User's Exercise Scores: $userExerciseScores")
+        Log.d("ExerciseRec", "Untried Exercises: $untriedExercises")
+        Log.d("ExerciseRec", "Recommendations after untried: $recommendations")
+        Log.d("ExerciseRec", "Recommendations after tried prioritization: $recommendations")
+        Log.d("ExerciseRec", "Final Recommendations: $recommendedExercises")
 
         return recommendedExercises
     }
