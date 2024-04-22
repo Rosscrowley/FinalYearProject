@@ -32,9 +32,11 @@ class WaveformView(context: Context, attrs: AttributeSet) : View(context, attrs)
     var isDynamic: Boolean = false
         set(value) {
             field = value
+            paint.color = if (value) Color.RED else Color.BLUE
             if (value) {
                 audioData = null
             }
+            invalidate()
         }
 
     fun updateLiveData(liveData: ShortArray) {
