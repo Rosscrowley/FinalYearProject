@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.NumberPicker
 import android.widget.TextView
@@ -29,9 +30,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
 
     private lateinit var instructionText: TextView
     private lateinit var countdownText: TextView
-    private lateinit var playButton: ImageButton
-    private lateinit var pauseButton: ImageButton
-    private lateinit var restartButton: ImageButton
+    private lateinit var startButton: Button
     private lateinit var closeButton: ImageButton
     private lateinit var breathingView: BreathingExerciseView
 
@@ -41,13 +40,13 @@ class BreathingExerciseActivity : AppCompatActivity() {
 
         instructionText = findViewById(R.id.instructionText)
         countdownText = findViewById(R.id.countdownText)
-        playButton = findViewById(R.id.playButton)
-        pauseButton = findViewById(R.id.pauseButton)
-        restartButton = findViewById(R.id.restartButton)
+        startButton = findViewById(R.id.startButton)
         closeButton = findViewById(R.id.closeButton)
         breathingView = findViewById(R.id.breathingView)
 
         closeButton.setOnClickListener {
+            countdownTimer?.cancel()
+            isTimerRunning = false
             startActivity(Intent(this@BreathingExerciseActivity, ExercisesActivity::class.java))
         }
 
@@ -71,16 +70,8 @@ class BreathingExerciseActivity : AppCompatActivity() {
             }
         }
 
-        playButton.setOnClickListener {
+        startButton.setOnClickListener {
             onPlayButtonClick(it)
-        }
-
-        pauseButton.setOnClickListener {
-            onPauseButtonClick(it)
-        }
-
-        restartButton.setOnClickListener {
-            onRestartButtonClick(it)
         }
 
         promptDurationSelection()
@@ -91,17 +82,6 @@ class BreathingExerciseActivity : AppCompatActivity() {
             startCountdown()
             viewModel.startExercise()
         }
-    }
-
-    private fun onPauseButtonClick(view: View) {
-        countdownTimer?.cancel()
-        viewModel.pauseExercise()
-        isTimerRunning = false
-    }
-
-    private fun onRestartButtonClick(view: View) {
-        restartTimer()
-        viewModel.startExercise()
     }
 
     private fun promptDurationSelection() {
@@ -152,10 +132,6 @@ class BreathingExerciseActivity : AppCompatActivity() {
         countdownText.text = String.format("%02d:%02d", minutes, seconds)
     }
 
-    private fun restartTimer() {
-        startCountdown()
-    }
-
     private fun markExerciseAsComplete() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
@@ -197,5 +173,10 @@ class BreathingExerciseActivity : AppCompatActivity() {
             .addOnFailureListener {
                 // Handle failure
             }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countdownTimer?.cancel()
     }
 }
