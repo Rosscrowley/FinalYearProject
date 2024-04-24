@@ -58,7 +58,6 @@
     </com.google.android.material.appbar.AppBarLayout>
 
 
-
     <TextView
         android:id="@+id/textView4"
         android:layout_width="379dp"
@@ -74,15 +73,16 @@
 
     <Button
         android:id="@+id/speakButton"
-        android:layout_width="122dp"
-        android:layout_height="62dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
         android:text="Listen"
+        android:backgroundTint="@color/appColour2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/recordButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView1"
-        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintVertical_bias="0.757"
         app:srcCompat="@drawable/ic_play_circle" />
 
     <HorizontalScrollView
@@ -110,7 +110,7 @@
         android:id="@+id/horizontalScrollView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
+        android:layout_marginBottom="84dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -127,17 +127,33 @@
             app:layout_constraintVertical_bias="0.5" />
     </HorizontalScrollView>
 
-    <ImageButton
+    <Button
         android:id="@+id/recordButton"
-        android:layout_width="122dp"
-        android:layout_height="62dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
+        android:text="Try"
+        android:backgroundTint="@color/appColour2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/speakButton"
         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView1"
-        app:layout_constraintVertical_bias="0.5"
-        app:srcCompat="@android:drawable/ic_btn_speak_now" />
+        app:layout_constraintVertical_bias="0.757" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="207dp"
+        android:layout_height="37dp"
+        android:text="Your Pronunciation"
+        android:textAlignment="center"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollViewCorrectWave"
+        app:layout_constraintVertical_bias="0.5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

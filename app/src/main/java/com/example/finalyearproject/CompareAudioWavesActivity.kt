@@ -27,7 +27,7 @@ import java.nio.ByteOrder
 
 class CompareAudioWavesActivity : AppCompatActivity() {
 
-    private lateinit var recordButton: ImageButton
+    private lateinit var recordButton: Button
     private lateinit var playButton: Button
     private lateinit var selectedText: TextView
     private lateinit var waveformView: WaveformView
@@ -254,7 +254,7 @@ class CompareAudioWavesActivity : AppCompatActivity() {
                 isRecording = true
                 // Indicate recording state on UI, e.g., change button color or icon
                 usersWaveformView.isDynamic = true
-                recordButton.setImageResource(R.drawable.ic_close) // Example
+                recordButton.setText("Stop")
                 recordingThread = Thread(Runnable { writeAudioDataToWaveform() }, "AudioRecorder Thread")
                 recordingThread?.start()
             } else {
@@ -272,7 +272,7 @@ class CompareAudioWavesActivity : AppCompatActivity() {
         recordingThread?.join()
         recordingThread = null
         // Revert UI changes to indicate recording has stopped
-        recordButton.setImageResource(R.drawable.speech_img) // Example
+        recordButton.setText("Try")
     }
 
     private fun writeAudioDataToWaveform() {
