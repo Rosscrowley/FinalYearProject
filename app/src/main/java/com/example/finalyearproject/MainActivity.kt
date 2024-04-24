@@ -82,22 +82,9 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
             showExercisesInfoDialog()
         }
 
-
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
-        pronunCard = findViewById(R.id.pronunTest)
-        pronunCard.setOnClickListener{
-            val intent = Intent(this@MainActivity, SpeechActivity::class.java)
-            startActivity(intent)
-        }
-
-        exerciseCard = findViewById(R.id.exercisesCard)
-        exerciseCard.setOnClickListener{
-            val intent = Intent(this@MainActivity, ExercisesActivity::class.java)
-            startActivity(intent)
-        }
         updateWelcomeMessage()
 
         bottomNavigationView = findViewById(R.id.nav_view)
@@ -133,7 +120,7 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
         initializeOrFetchExercises()
         barChart = findViewById(R.id.xpBarchart)
         setupBarChart()
-        addGoalLine(10000f)
+        addGoalLine(2000f)
         fetchXpDataAndUpdateChart()
     }
 
@@ -331,7 +318,7 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
 
     private fun setupBarChart() {
         barChart.apply {
-            description.text = "Weekly XP Progress"
+            description.text = "Daily XP Progress"
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = IndexAxisValueFormatter(arrayOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
@@ -340,16 +327,16 @@ class MainActivity : AppCompatActivity(), DailyExerciseAdapter.ExerciseClickList
             }
             axisLeft.apply {
                 axisMinimum = 0f
-                granularity = 2000f // set increments to 2000
+                granularity = 500f // set increments to 2000
                 isGranularityEnabled = true
-                axisMaximum = 12000f
+                axisMaximum = 4000f
             }
             axisRight.isEnabled = false
         }
     }
 
     private fun addGoalLine(goal: Float) {
-        val goalLine = LimitLine(goal, "Goal: $goal XP").apply {
+        val goalLine = LimitLine(goal, "Daily Goal: $goal XP").apply {
             lineWidth = 4f
             lineColor = Color.RED // Ensure the color stands out
             enableDashedLine(10f, 10f, 0f)
