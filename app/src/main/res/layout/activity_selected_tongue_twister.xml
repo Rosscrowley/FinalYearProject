@@ -31,6 +31,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5">
 
+            <ImageView
+                android:id="@+id/dafIcon"
+                android:layout_width="84dp"
+                android:layout_height="60dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="Navigate"
+                android:padding="16dp"
+                android:src="@drawable/baseline_hearing_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@android:color/black" />
+
             <TextView
                 android:id="@+id/toolbarTitle"
                 android:layout_width="wrap_content"
@@ -64,7 +76,7 @@
     <TextView
         android:id="@+id/selectedTongueTwisterContentTextView"
         android:layout_width="399dp"
-        android:layout_height="317dp"
+        android:layout_height="364dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="76dp"
         android:gravity="center"
@@ -76,8 +88,8 @@
 
     <Button
         android:id="@+id/listenButton"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
         android:layout_below="@id/selectedTongueTwisterContentTextView"
         android:layout_centerHorizontal="true"
         android:text="Listen"
@@ -86,12 +98,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/selectedTongueTwisterContentTextView"
-        app:layout_constraintVertical_bias="0.411" />
+        app:layout_constraintVertical_bias="0.411"
+        android:backgroundTint="@color/appColour2"/>
 
     <Button
         android:id="@+id/tryButton"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
         android:layout_below="@id/listenButton"
         android:layout_centerHorizontal="true"
         android:text="Try"
@@ -100,7 +113,8 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/listenButton"
         app:layout_constraintTop_toBottomOf="@+id/selectedTongueTwisterContentTextView"
-        app:layout_constraintVertical_bias="0.411" />
+        app:layout_constraintVertical_bias="0.411"
+        android:backgroundTint="@color/appColour2"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

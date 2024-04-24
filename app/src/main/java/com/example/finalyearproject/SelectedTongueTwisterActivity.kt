@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +28,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.protobuf.ByteString
@@ -50,11 +52,15 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
     private var isRecording = false
     private val sampleRate = 44100
     private val delayMillis = 500
+    private lateinit var dafIcon: ImageView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_selected_tongue_twister)
+        dafIcon = findViewById(R.id.dafIcon)
+        dafIcon.isVisible = false
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
@@ -194,6 +200,7 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
     private fun startRecordingAndPlayback() {
         isRecording = true
         startButton.text = "Stop"
+        dafIcon.isVisible = true
         val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT)
         val bufferSize = minBufferSize * 2
         val circularBuffer = TextPassageActivity.CircularBuffer(bufferSize * delayMillis / 1000)
@@ -236,6 +243,7 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
     private fun stopRecording() {
         isRecording = false
         startButton.text = "Start"
+        dafIcon.isVisible = false
 
         showRatingDialog()
     }
