@@ -11,12 +11,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -25,7 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 
-class ProgressActivity : AppCompatActivity() , OnChartValueSelectedListener {
+class ProgressActivity : AppCompatActivity() {
 
     private lateinit var exercisesRecyclerView: RecyclerView
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -90,7 +87,7 @@ class ProgressActivity : AppCompatActivity() , OnChartValueSelectedListener {
             description.isEnabled = false
             legend.isEnabled = false
 
-            setOnChartValueSelectedListener(this@ProgressActivity)
+           // setOnChartValueSelectedListener(this@ProgressActivity)
 
         }
     }
@@ -150,15 +147,5 @@ class ProgressActivity : AppCompatActivity() , OnChartValueSelectedListener {
 
         pieChart.data = data
         pieChart.invalidate() // Refresh the chart
-    }
-
-    override fun onValueSelected(e: Entry?, h: Highlight?) {
-        if (e is PieEntry) {
-            pieChart.centerText = String.format("%.1f%%", e.value)
-        }
-    }
-
-    override fun onNothingSelected() {
-        pieChart.centerText = "Exercise Split"
     }
 }

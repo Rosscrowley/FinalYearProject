@@ -31,6 +31,11 @@ class ProfileActivity : AppCompatActivity() {
         updateFearedSoundsText.setOnClickListener {
             updateFearedSounds()
         }
+        val homeButton: TextView = findViewById(R.id.homeBtn)
+        homeButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 

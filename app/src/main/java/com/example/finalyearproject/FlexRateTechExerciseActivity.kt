@@ -1,5 +1,6 @@
 package com.example.finalyearproject
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.media.MediaPlayer
@@ -79,12 +80,13 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_flex_rate_tech_exercise)
 
-        val closeButton: ImageButton = findViewById(R.id.closeButton)
-        closeButton.setOnClickListener {
-            val intent = Intent(this@FlexRateTechExerciseActivity, ExercisesActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+//        val closeButton: ImageButton = findViewById(R.id.closeButton)
+//        closeButton.setOnClickListener {
+//            val intent = Intent(this@FlexRateTechExerciseActivity, ExercisesActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+        setupCloseButton()
 
         googleTextToSpeechService = GoogleTextToSpeechService(this)
 
@@ -209,6 +211,7 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
                 timerTextView.text = " ${millisUntilFinished / 1000}s"
             }
 
+            @SuppressLint("SuspiciousIndentation")
             override fun onFinish() {
                 timerTextView.text = " 00:00s"
                 val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -239,5 +242,25 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
             .addOnFailureListener {
                 // Handle failure
             }
+    }
+
+    private fun setupCloseButton() {
+        val closeButton: ImageButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            cleanupBeforeExit() // Clean up before closing
+            val intent = Intent(this@FlexRateTechExerciseActivity, ExercisesActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    private fun cleanupBeforeExit() {
+        if (isTimerStarted) {
+            countDownTimer.cancel()  // Stop the timer
+            isTimerStarted = false
+        }
+        currentIndex = 0
+        Toast.makeText(this, "Exercise not completed. No score will be saved.", Toast.LENGTH_SHORT).show()
+
     }
 }
