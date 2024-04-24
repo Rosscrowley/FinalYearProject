@@ -62,8 +62,8 @@
         android:id="@+id/question_text"
         android:layout_width="286dp"
         android:layout_height="101dp"
-        android:text="Questions Loading"
         android:textSize="25sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,14 +72,16 @@
 
     <Button
         android:id="@+id/next_button"
-        android:layout_width="123dp"
-        android:layout_height="50dp"
+        android:layout_width="125dp"
+        android:layout_height="55dp"
         android:text="Next"
+        android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/question_text"
-        app:layout_constraintVertical_bias="0.663" />
+        app:layout_constraintVertical_bias="0.663"
+        android:backgroundTint="@color/appColour2"/>
 
 
     <TextView
@@ -87,15 +89,15 @@
         android:layout_width="110dp"
         android:layout_height="48dp"
         android:text="1/10"
-        android:textStyle="bold"
         android:textAlignment="center"
-        android:textSize="20sp"
+        android:textSize="30sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/question_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.887"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.637" />
+        app:layout_constraintVertical_bias="0.535" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -105,10 +107,10 @@
         android:indeterminateTint="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/question_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.906" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <RadioGroup
         android:id="@+id/answer_group"
