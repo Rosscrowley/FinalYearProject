@@ -20,6 +20,7 @@ import java.util.Locale
 class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
 
     private lateinit var progressBar: ProgressBar
+    private lateinit var muscleGroupProgressBar: ProgressBar
     private lateinit var emojiFace: ImageView
     private lateinit var relaxLabel: TextView
     private lateinit var startButton: Button
@@ -29,25 +30,25 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
     private var countDownTimer: CountDownTimer? = null
     private val muscleGroups = listOf("Cheek and Jaw", "Forehead and Eyebrows", "Fists and Arms", "Feet and Legs", "Shoulders")
     private var currentGroupIndex = 0
-    private lateinit var closeButton: ImageButton
+    private var shouldCompleteExercise = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_progressive_muscle_exercise)
 
-        closeButton = findViewById(R.id.closeButton)
-        closeButton.setOnClickListener {
-            startActivity(Intent(this@ProgressiveMuscleExerciseActivity, ExercisesActivity::class.java))
-        }
-
+        setupCloseButton()
         progressBar = findViewById(R.id.progressBar)
         emojiFace = findViewById(R.id.emojiFace)
         relaxLabel = findViewById(R.id.relaxLabel)
         startButton = findViewById(R.id.button3)
+        startButton.isEnabled = true
 
         counterTextView = findViewById(R.id.textView8)
 
         progressBar.max = 1000
+
+         muscleGroupProgressBar = findViewById(R.id.muscleGroupProgressBar)
+        muscleGroupProgressBar.max = muscleGroups.size * 1000
 
         startButton.setOnClickListener {
             startProgress()
@@ -59,7 +60,8 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
         updateImageAndText(isRelaxState)
         updateCycleText(cycleCount)
         updateMuscleGroupText(muscleGroups[currentGroupIndex])
-
+        updateMuscleGroupProgress()
+        startButton.isEnabled = false
 
         progressBar.max = 1000
         progressBar.progress = 0
@@ -107,12 +109,15 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
                     updateCycleText(cycleCount)
 
                     updateMuscleGroupText(muscleGroups[currentGroupIndex])
-
+                    updateMuscleGroupProgress()
                     // Start the progress for the new muscle group
                     startProgress()
                 } else {
                     // All muscle groups have been completed, handle the end of the session
-                    markExerciseAsComplete()
+                    if (shouldCompleteExercise) {
+                        markExerciseAsComplete()
+                        startButton.isEnabled = true
+                    }
                 }
             }
         }.start()
@@ -180,5 +185,24 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
             .addOnFailureListener {
                 // Handle failure
             }
+    }
+
+    private fun updateMuscleGroupProgress() {
+        val totalProgress = (currentGroupIndex + 1) * 1000
+        muscleGroupProgressBar.progress = totalProgress
+    }
+
+    private fun cleanupBeforeExit() {
+        countDownTimer?.cancel()
+        shouldCompleteExercise = false
+    }
+    private fun setupCloseButton() {
+        val closeButton: ImageButton = findViewById(R.id.closeButton)
+        closeButton.setOnClickListener {
+            cleanupBeforeExit()
+            val intent = Intent(this@ProgressiveMuscleExerciseActivity, ExercisesActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 }
