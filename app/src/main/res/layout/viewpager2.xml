@@ -1,7 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:shimmer="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F8F8F8"
@@ -28,6 +27,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5">
+
+            <ImageView
+                android:id="@+id/dafIcon"
+                android:layout_width="82dp"
+                android:layout_height="65dp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="Navigate"
+                android:padding="16dp"
+                android:src="@drawable/baseline_hearing_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@android:color/black" />
 
             <TextView
                 android:id="@+id/toolbarTitle"
@@ -62,10 +73,10 @@
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager_passages"
-        android:layout_width="409dp"
-        android:layout_height="509dp"
+        android:layout_width="414dp"
+        android:layout_height="555dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.666"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></androidx.viewpager2.widget.ViewPager2>
 
@@ -74,13 +85,14 @@
         android:layout_width="126dp"
         android:layout_height="56dp"
         android:layout_marginTop="40dp"
-        android:text="Start"
+        android:text="Start Recording"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewPager_passages"
-        app:layout_constraintVertical_bias="0.634" />
+        app:layout_constraintVertical_bias="0.634"
+        android:backgroundTint="@color/appColour2"/>
 
     <ProgressBar
         android:id="@+id/progressBar2"

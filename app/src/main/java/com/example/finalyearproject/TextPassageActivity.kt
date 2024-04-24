@@ -18,6 +18,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.RatingBar
 import android.widget.Toast
@@ -26,6 +27,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
 import com.example.finalyearproject.ChooseReadingTopicActivity.Companion.EXTRA_CATEGORY_NAME
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -60,6 +62,7 @@ class TextPassageActivity : AppCompatActivity() {
     private val sampleRate = 44100
     private val delayMillis = 500
     private lateinit var startButton: Button
+    private lateinit var dafIcon: ImageView
     private lateinit var ratingBar: RatingBar
     private lateinit var progressBar: ProgressBar
     private var mediaRecorder: MediaRecorder? = null
@@ -77,6 +80,9 @@ class TextPassageActivity : AppCompatActivity() {
         setContentView(R.layout.viewpager2)
 
         db = DatabaseManager.getDatabase(this)
+
+        dafIcon = findViewById(R.id.dafIcon)
+        dafIcon.isVisible = false
 
         val categoryName = intent.getStringExtra(EXTRA_CATEGORY_NAME)
         viewPager = findViewById(R.id.viewPager_passages)
@@ -117,6 +123,7 @@ class TextPassageActivity : AppCompatActivity() {
             isRecording = false
             isRecordingDAF = false
             startButton.text = "Start Recording"
+            dafIcon.isVisible = false
             showSaveOptionDialog()
         } else {
             startRecording()
@@ -124,6 +131,7 @@ class TextPassageActivity : AppCompatActivity() {
             isRecording = true
             isRecordingDAF = true
             startButton.text = "Stop Recording"
+            dafIcon.isVisible = true
         }
     }
 
