@@ -143,5 +143,15 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="149dp"
+        android:layout_height="114dp"
+        app:layout_constraintBottom_toTopOf="@+id/nameLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/speakease_high_resolution_logo_transparent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

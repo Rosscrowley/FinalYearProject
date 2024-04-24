@@ -61,4 +61,10 @@
         <item name="colorControlNormal">@color/white</item>
         <item name="colorControlActivated">@color/appColour</item>
     </style>
+
+    <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
 </resources>

@@ -49,8 +49,9 @@ class SignUpActivity : AppCompatActivity() {
                         if (it.isSuccessful) {
                             val name = binding.nameEntered.text.toString()
                             val dob = binding.dobEntered.text.toString()
+                            val email = binding.emailEntered.text.toString()
 
-                            val user = User(name, dob, feared_sounds = emptyList(), firstLogin = true, lastLoginDateString = "", consecutiveLogins = 0)
+                            val user = User(name, dob,email, feared_sounds = emptyList(), firstLogin = true, lastLoginDateString = "", consecutiveLogins = 0)
                             val userId = firebaseAuth.currentUser?.uid
 
                             if (isValidDob(dob)) {

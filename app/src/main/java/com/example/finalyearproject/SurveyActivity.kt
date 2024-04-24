@@ -23,19 +23,32 @@ class SurveyActivity : AppCompatActivity() {
     private lateinit var soundsRecyclerView: RecyclerView
     private lateinit var soundsAdapter: SoundsAdapter
     private var soundsList = mutableListOf(
-        SoundItem("HH", "House, Hot"),
-        SoundItem("NG", "SiNG, loNG"),
-        SoundItem("AA", "fAther, smArt"),
-        SoundItem("AY", "mY, whY"),
-        SoundItem("OY", "bOY, tOY"),
-        SoundItem("CH", "CHair, CHina"),
-        SoundItem("JH", "Just, Gym"),
-        SoundItem("EY", "sAY, EIght"),
-        SoundItem("AE", "At, jAcket"),
-        SoundItem("UW", "yOU, fOOd"),
         SoundItem("S", "Say, boSS"),
         SoundItem("B", "Buy, Big"),
-        SoundItem("Z", "Zoo, buZZ")
+        SoundItem("P", "Park, looP"),
+        SoundItem("T", "Town, leTTer"),
+        SoundItem("L", "Long, taLL"),
+        SoundItem("F", "Father, Fun"),
+        SoundItem("D", "Day, maD"),
+        SoundItem("C", "Cake, laCk"),
+        SoundItem("M", "Man, pluM"),
+        SoundItem("J", "Just, Joke"),
+        SoundItem("Z", "Zoo, buZZ"),
+        SoundItem("A", "At, jAcket"),
+        SoundItem("E", "yOU, fOOd"),
+        SoundItem("I", "In, Ice"),
+        SoundItem("O", "Odd, Only"),
+        SoundItem("U", "Under, Unique"),
+        SoundItem("G", "Great, joG"),
+        SoundItem("H", "Hungry, Hood"),
+        SoundItem("K", "Kent, Kind"),
+        SoundItem("N", "Nope, mooN"),
+        SoundItem("R", "Run, aRk"),
+        SoundItem("V", "Vas, caVe"),
+        SoundItem("W", "Wind, knoW"),
+        SoundItem("Q", "Queen, Quiet"),
+        SoundItem("Y", "Young, Yummy"),
+        SoundItem("X", "oX, X-ray"),
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,10 +1,11 @@
 package com.example.finalyearproject
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity() {
 
+    private lateinit var bottomNavigationView: BottomNavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -22,7 +24,7 @@ class ProfileActivity : AppCompatActivity() {
         updateUserData()
         calculateAndDisplayRank()
 
-        val logOutButton: Button = findViewById(R.id.logOutBtn)
+        val logOutButton: ImageView = findViewById(R.id.logoutIcon)
         logOutButton.setOnClickListener {
             performLogout()
         }
@@ -31,10 +33,37 @@ class ProfileActivity : AppCompatActivity() {
         updateFearedSoundsText.setOnClickListener {
             updateFearedSounds()
         }
-        val homeButton: TextView = findViewById(R.id.homeBtn)
-        homeButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+
+        bottomNavigationView = findViewById(R.id.nav_view)
+        bottomNavigationView.selectedItemId = R.id.menu_item_home
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_item_home -> {
+                    // Navigate to Home
+                    val intent = Intent(this@ProfileActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.menu_item_progress -> {
+                    // Navigate to Progress
+                    val intent = Intent(this@ProfileActivity, ProgressActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.menu_item_exercise -> {
+                    // Navigate to Exercise
+                    val intent = Intent(this@ProfileActivity, ExercisesActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                R.id.menu_item_wave_analysis -> {
+                    // Navigate to Exercise
+                    val intent = Intent(this@ProfileActivity, WaveAnalysisPageActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+                else -> false
+            }
         }
 
     }
@@ -51,12 +80,14 @@ class ProfileActivity : AppCompatActivity() {
                     val dob = snapshot.child("dob").getValue(String::class.java) ?: "Not Set"
                     val fearedSounds = snapshot.child("feared_sounds").children.map { it.getValue(String::class.java) }.joinToString(", ")
                     val streak = snapshot.child("consecutiveLogins").getValue(Int::class.java) ?: 0
+                    val email = snapshot.child("email").getValue(String::class.java) ?: "Email"
 
                     findViewById<TextView>(R.id.userName).text = userName
                     findViewById<TextView>(R.id.userXp).text = xp.toString()
                     findViewById<TextView>(R.id.Dob).text = dob
                     findViewById<TextView>(R.id.fearedSounds).text = fearedSounds
                     findViewById<TextView>(R.id.consecDays).text = streak.toString()
+                    findViewById<TextView>(R.id.email).text = email
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
