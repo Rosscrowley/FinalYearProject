@@ -9,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.HorizontalScrollView
 import android.widget.ImageButton
+import android.widget.SeekBar
 import androidx.appcompat.app.AppCompatActivity
 import com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS
 import com.arthenica.mobileffmpeg.FFmpeg
@@ -32,9 +33,13 @@ class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var waveformView: WaveformView
     private lateinit var horizontalScrollView: HorizontalScrollView
     private lateinit var closeButton: ImageButton
+    private lateinit var audioSeekBar: SeekBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_audio)
+
+        audioSeekBar = findViewById(R.id.seekBar)
+        audioSeekBar.progress = 0
 
         closeButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
@@ -86,6 +91,7 @@ class AudioPlayerActivity : AppCompatActivity() {
                 if (mp.isPlaying) {
                     val currentPosition = mp.currentPosition.toLong()
                     waveformView.setPlaybackPosition(currentPosition)
+                    updateProgressBar(currentPosition, mp.duration)
 
                     val scrollPosition = calculateScrollPosition(currentPosition)
                     horizontalScrollView.scrollTo(scrollPosition, 0) // Scroll to the calculated position
@@ -235,6 +241,10 @@ class AudioPlayerActivity : AppCompatActivity() {
         super.onStop()
         // Stop updating the waveform when the activity stops
         handler.removeCallbacks(updateWaveformRunnable)
+    }
+    private fun updateProgressBar(currentPosition: Long, totalDuration: Int) {
+        val progress = (currentPosition.toDouble() / totalDuration * 100).toInt()
+        audioSeekBar.progress = progress
     }
 }
 

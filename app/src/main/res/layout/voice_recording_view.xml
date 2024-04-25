@@ -9,7 +9,7 @@
 
     <TextView
         android:id="@+id/audioName"
-        android:layout_width="134dp"
+        android:layout_width="205dp"
         android:layout_height="wrap_content"
         android:text="Topic Name"
         android:textSize="18sp" />
