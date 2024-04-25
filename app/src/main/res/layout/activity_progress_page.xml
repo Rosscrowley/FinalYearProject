@@ -3,57 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/appColourBG">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="423dp"
         android:layout_height="67dp"
         android:background="@color/appColour"
-        app:layout_constraintBottom_toTopOf="@+id/tvProgressTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
         app:title="Your Progress">
 
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/tvProgressTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Exercise Progress"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/exercisesRecyclerView"
-        android:layout_width="408dp"
-        android:layout_height="197dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvProgressTitle"
-        app:layout_constraintVertical_bias="0.0" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
-        android:layout_width="410dp"
-        android:layout_height="284dp"
+        android:layout_width="403dp"
+        android:layout_height="465dp"
+        android:layout_marginBottom="68dp"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exercisesRecyclerView"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
@@ -68,6 +42,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.995"
         app:menu="@menu/bottom_navigation_menu" />
+
+    <ImageButton
+        android:id="@+id/infoIcon"
+        android:layout_width="47dp"
+        android:layout_height="38dp"
+        android:layout_marginEnd="52dp"
+        android:background="@color/appColourBG"
+        app:layout_constraintBottom_toTopOf="@+id/pieChart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintVertical_bias="0.483"
+        app:srcCompat="@drawable/ic_info_24" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="216dp"
+        android:layout_height="40dp"
+        android:text="Exercise Chart"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/pieChart"
+        app:layout_constraintEnd_toStartOf="@+id/infoIcon"
+        app:layout_constraintHorizontal_bias="0.979"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintVertical_bias="0.5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -29,12 +31,22 @@ import java.util.TimeZone
 class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedListener {
 
     private lateinit var scoreChart: LineChart
+    private val exerciseNameMap = mapOf(
+        "Reading1" to "Reading Progress Graph",
+        "SyllableCounting1" to "Syllable Counting Progress Graph",
+        "TongueTwister1" to "Tongue Twisters Progress Graph",
+        "Breathing1" to "Breathing Progress Graph",
+        "ProgressiveMuscle1" to "Progressive Muscle Progress Graph",
+        "FlexibleRateTechnique1" to "Flexible Rate Progress Graph"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.exercise_graph_activity)
 
         scoreChart = findViewById(R.id.score_chart)
+        val toolbarTitle: TextView = findViewById(R.id.toolbarTitle)
+
 
         val closeButton: ImageButton = findViewById(R.id.closeButton)
         closeButton.setOnClickListener {
@@ -43,6 +55,9 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         }
 
         val exerciseId = intent.getStringExtra("EXERCISE_ID") ?: return
+        val exerciseName = exerciseNameMap[exerciseId] ?: "Unknown Exercise"
+        toolbarTitle.text = exerciseName
+
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
         scoreChart.setOnChartValueSelectedListener(this)
@@ -74,7 +89,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
 
     private fun filterScoresByRecentDates(scores: List<ExerciseScore>): List<ExerciseScore> {
         val thirtyDaysAgo = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, -30)
+            add(Calendar.DAY_OF_YEAR, -7)
         }.time
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -89,52 +104,40 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
     }
 
     private fun populateLineChart(scores: List<ExerciseScore>, exerciseId: String) {
-        // Group scores by date and calculate the average score for each date
-        val averageScoresByDate = scores
-            .groupBy { it.date }
-            .mapValues { (_, dailyScores) ->
-                dailyScores.map { it.score }.average().toFloat()
-            }
 
-        val entries = averageScoresByDate.map { (date, avgScore) ->
-            Entry(convertDateToXValue(date), avgScore)
+        val last7Days = List(7) { i ->
+            Calendar.getInstance().apply {
+                add(Calendar.DAY_OF_YEAR, -6 + i)
+            }
+        }.map {
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.time)
+        }
+
+
+        val scoresMap = last7Days.associateWith { 0f }.toMutableMap()
+
+        scores.forEach {
+            val date = it.date
+            if (date in scoresMap.keys) {
+                scoresMap[date] = it.score.toFloat()
+            }
+        }
+
+        // Create entries for the line chart
+        val entries = scoresMap.entries.sortedBy { it.key }.mapIndexed { index, entry ->
+            Entry(index.toFloat(), entry.value)
         }
 
         val dataSet = LineDataSet(entries, "Average User Scores")
+        configureDataSetAppearance(dataSet, exerciseId)
 
-        Log.d("ExerciseProgressGraph", "Plotting entries: $entries")
-
-        dataSet.setDrawCircles(true)
-        dataSet.setCircleColor(R.color.appColour) // Set the color of the circles
-        dataSet.circleRadius = 5f // Set the radius of the circles
-
-
-        val yAxis = scoreChart.axisLeft
-        scoreChart.axisRight.isEnabled = false
-        when (exerciseId) {
-            "Reading1", "TongueTwister1" -> {
-                yAxis.axisMaximum = 5f
-                yAxis.axisMinimum = 1f
-                yAxis.granularity = 1f
-            }
-            "SyllableCounting1" -> {
-                yAxis.axisMaximum = 10f
-                yAxis.axisMinimum = 1f
-                yAxis.granularity = 1f
-            }
-        }
 
         val lineData = LineData(dataSet)
         scoreChart.data = lineData
+        setupXAxis(last7Days)
+        setupYAxis(exerciseId)
 
-        val xAxis = scoreChart.xAxis
-        xAxis.valueFormatter = DateAxisValueFormatter()
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.granularity = 1f
-        xAxis.textSize = 10f
-        xAxis.labelRotationAngle = -45f
-
-        scoreChart.invalidate() // refresh chart
+        scoreChart.invalidate()
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -156,20 +159,52 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         val date = Date(xValue.toLong())
         return format.format(date)
     }
-    private fun convertDateToXValue(dateStr: String): Float {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        format.timeZone = TimeZone.getTimeZone("Europe/Brussels")
-        val date = format.parse(dateStr) ?: return 0f
-        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
-        calendar.time = date
-        calendar.set(Calendar.HOUR_OF_DAY, 12)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
-        return calendar.timeInMillis.toFloat()
+//    private fun convertDateToXValue(dateStr: String): Float {
+//        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+//        format.timeZone = TimeZone.getTimeZone("Europe/Brussels")
+//        val date = format.parse(dateStr) ?: return 0f
+//        val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/Brussels"))
+//        calendar.time = date
+//        calendar.set(Calendar.HOUR_OF_DAY, 12)
+//        calendar.set(Calendar.MINUTE, 0)
+//        calendar.set(Calendar.SECOND, 0)
+//        calendar.set(Calendar.MILLISECOND, 0)
+//        return calendar.timeInMillis.toFloat()
+//    }
+
+    private fun configureDataSetAppearance(dataSet: LineDataSet, exerciseId: String) {
+        dataSet.setDrawCircles(true)
+        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.appColour))
+        dataSet.circleRadius = 5f
+    }
+    private fun setupXAxis(dates: List<String>) {
+        val xAxis = scoreChart.xAxis
+        xAxis.valueFormatter = DateAxisValueFormatter(dates)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.granularity = 1f
+        xAxis.textSize = 10f
+        xAxis.labelRotationAngle = -45f
+        xAxis.setLabelCount(dates.size, true)
     }
 
-    class DateAxisValueFormatter : ValueFormatter() {
+    private fun setupYAxis(exerciseId: String) {
+        val yAxis = scoreChart.axisLeft
+        scoreChart.axisRight.isEnabled = false
+        when (exerciseId) {
+            "Reading1", "TongueTwister1" -> {
+                yAxis.axisMaximum = 5f
+                yAxis.axisMinimum = 0f
+                yAxis.granularity = 1f
+            }
+            else -> {
+                yAxis.axisMaximum = 10f
+                yAxis.axisMinimum = 0f
+                yAxis.granularity = 1f
+            }
+        }
+    }
+
+    class DateAxisValueFormatter(private val dates: List<String>) : ValueFormatter() {
         private val dateFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
 
         init {
@@ -177,8 +212,11 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         }
 
         override fun getFormattedValue(value: Float): String {
-            val date = Date(value.toLong())
-            return dateFormat.format(date)
+            val dateIndex = value.toInt()
+            if (dateIndex >= 0 && dateIndex < dates.size) {
+                return dates[dateIndex]
+            }
+            return ""
         }
     }
 }

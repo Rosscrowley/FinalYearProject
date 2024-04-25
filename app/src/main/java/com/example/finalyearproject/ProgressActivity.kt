@@ -5,15 +5,18 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -27,22 +30,17 @@ class ProgressActivity : AppCompatActivity() {
     private lateinit var exercisesRecyclerView: RecyclerView
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var pieChart: PieChart
+    private var exerciseType: String? = null
+    private lateinit var nameToIdMap: Map<String, String>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_progress_page)
 
-        exercisesRecyclerView = findViewById(R.id.exercisesRecyclerView)
-        exercisesRecyclerView.layoutManager = LinearLayoutManager(this)
-
-        val dividerItemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        exercisesRecyclerView.addItemDecoration(dividerItemDecoration)
-
-        val exercises = listOf(Exercise("Reading1", "Reading Progress"), Exercise("TongueTwister1", "Tongue Twister Progress"), Exercise("SyllableCounting1", "Syllable Counting Progress")) // Example data
-        exercisesRecyclerView.adapter = ExerciseAdapter(exercises) { exercise ->
-            val intent = Intent(this, ExerciseProgressGraphActivity::class.java)
-            intent.putExtra("EXERCISE_ID", exercise.id)
-            startActivity(intent)
+        val infoIcon: ImageView = findViewById(R.id.infoIcon)
+        infoIcon.setOnClickListener {
+            showPieChartInfo()
         }
 
         bottomNavigationView = findViewById(R.id.nav_view)
@@ -87,7 +85,22 @@ class ProgressActivity : AppCompatActivity() {
             description.isEnabled = false
             legend.isEnabled = false
 
-           // setOnChartValueSelectedListener(this@ProgressActivity)
+            pieChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e is PieEntry) {
+                        val exerciseName = e.label
+                        val exerciseId = nameToIdMap[exerciseName]
+                        if (exerciseId != null) {
+                            val intent = Intent(this@ProgressActivity, ExerciseProgressGraphActivity::class.java)
+                            intent.putExtra("EXERCISE_ID", exerciseId)
+                            startActivity(intent)
+                        }
+                    }
+                }
+
+                override fun onNothingSelected() {
+                }
+            })
 
         }
     }
@@ -102,9 +115,9 @@ class ProgressActivity : AppCompatActivity() {
 
                         // Count each type of exercise
                         snapshot.children.forEach { userScoreSnapshot ->
-                            val exerciseType = userScoreSnapshot.key ?: return
+                            exerciseType = userScoreSnapshot.key ?: return
                             val count = userScoreSnapshot.childrenCount.toInt()
-                            exerciseCounts[exerciseType] = count
+                            exerciseCounts[exerciseType!!] = count
                         }
 
                         // Load the data into the PieChart
@@ -118,10 +131,22 @@ class ProgressActivity : AppCompatActivity() {
         }
     }
     private fun loadPieChartData(context: Context, exerciseCounts: Map<String, Int>) {
+        val exerciseNameMap = mapOf(
+            "Reading1" to "Reading",
+            "SyllableCounting1" to "Syllable Counting",
+            "TongueTwister1" to "Tongue Twisters",
+            "Breathing1" to "Breathing",
+            "ProgressiveMuscle1" to "Progressive Muscle",
+            "FlexibleRateTechnique1" to "Flexible Rate"
+        )
+
+       nameToIdMap = exerciseNameMap.entries.associate { (key, value) -> value to key }
+
         val entries = ArrayList<PieEntry>()
 
-        exerciseCounts.forEach { (exerciseType, count) ->
-            entries.add(PieEntry(count.toFloat(), exerciseType))
+        exerciseCounts.forEach { (exerciseId, count) ->
+            val exerciseName = exerciseNameMap[exerciseId] ?: "Unknown Exercise"
+            entries.add(PieEntry(count.toFloat(), exerciseName))
         }
 
         val dataSet = PieDataSet(entries, "Exercise Effort")
@@ -147,5 +172,16 @@ class ProgressActivity : AppCompatActivity() {
 
         pieChart.data = data
         pieChart.invalidate() // Refresh the chart
+    }
+
+    private fun showPieChartInfo() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Exercise Chart")
+        builder.setMessage("The Chart shows your exercise usage split.\n\n" + "Ideally you want the pie chart segments to be even!\n\n" + "Click a segment to view how you have been getting on over the past week!")
+        builder.setPositiveButton("OK") { dialog, which ->
+            dialog.dismiss()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 }
