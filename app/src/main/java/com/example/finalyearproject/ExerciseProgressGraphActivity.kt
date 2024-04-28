@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
@@ -39,6 +38,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
         "ProgressiveMuscle1" to "Progressive Muscle Progress Graph",
         "FlexibleRateTechnique1" to "Flexible Rate Progress Graph"
     )
+    private lateinit var last7Days: List<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +105,7 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
 
     private fun populateLineChart(scores: List<ExerciseScore>, exerciseId: String) {
 
-        val last7Days = List(7) { i ->
+         last7Days = List(7) { i ->
             Calendar.getInstance().apply {
                 add(Calendar.DAY_OF_YEAR, -6 + i)
             }
@@ -154,10 +154,11 @@ class ExerciseProgressGraphActivity : AppCompatActivity(), OnChartValueSelectedL
     }
 
     private fun convertXValueToDate(xValue: Float): String {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        format.timeZone = TimeZone.getTimeZone("Europe/Brussels")
-        val date = Date(xValue.toLong())
-        return format.format(date)
+        val index = xValue.toInt()
+        if (index >= 0 && index < last7Days.size) {
+            return last7Days[index]
+        }
+        return "Invalid date"
     }
 //    private fun convertDateToXValue(dateStr: String): Float {
 //        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
