@@ -134,7 +134,7 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
 
                 XpManager.awardXpForActivity(userId, "FlexibleRateTechnique", 6)
                 setResult(Activity.RESULT_OK)
@@ -260,7 +260,7 @@ class FlexRateTechExerciseActivity : AppCompatActivity() {
             isTimerStarted = false
         }
         currentIndex = 0
-        Toast.makeText(this, "Exercise not completed. No score will be saved.", Toast.LENGTH_SHORT).show()
+      //  Toast.makeText(this, "Exercise not completed. No score will be saved.", Toast.LENGTH_SHORT).show()
 
     }
 }

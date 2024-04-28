@@ -298,7 +298,7 @@ class SelectedTongueTwisterActivity : AppCompatActivity() {
             XpManager.awardXpForActivity(userId, "tongueTwisterExercise", 3)
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
                 finish()
             }.addOnFailureListener { e ->

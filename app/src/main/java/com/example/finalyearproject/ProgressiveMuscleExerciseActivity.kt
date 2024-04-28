@@ -154,7 +154,7 @@ class ProgressiveMuscleExerciseActivity : AppCompatActivity() {
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
                 saveUserExerciseScore(userId, "ProgressiveMuscle1", 5.0f)
                 XpManager.awardXpForActivity(userId, "ProgressiveMuscle1", 5)
                 setResult(Activity.RESULT_OK)

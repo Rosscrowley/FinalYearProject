@@ -318,7 +318,7 @@ class TextPassageActivity : AppCompatActivity() {
             XpManager.awardXpForActivity(userId, "readingExercise", 3)
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
                 finish()
             }.addOnFailureListener { e ->

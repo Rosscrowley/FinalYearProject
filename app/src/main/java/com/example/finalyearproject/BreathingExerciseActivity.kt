@@ -139,7 +139,7 @@ class BreathingExerciseActivity : AppCompatActivity() {
             val exerciseCompletionUpdate = mapOf("completed" to true, "date" to getCurrentDate())
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
 
                 val score = selectedMinutes.toFloat()
                 saveUserExerciseScore(userId, "Breathing1", score)

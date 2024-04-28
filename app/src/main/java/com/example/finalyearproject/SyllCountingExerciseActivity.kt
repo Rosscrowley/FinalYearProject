@@ -277,7 +277,7 @@ class SyllCountingExerciseActivity : AppCompatActivity() {
             XpManager.awardXpForActivity(userId, "syllableCounting", score)
 
             databaseReference.updateChildren(exerciseCompletionUpdate).addOnSuccessListener {
-                Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this, "Exercise marked as complete.", Toast.LENGTH_SHORT).show()
                 setResult(Activity.RESULT_OK)
                 finish()
             }.addOnFailureListener { e ->
