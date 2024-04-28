@@ -16,10 +16,18 @@
 
     <TextView
         android:id="@+id/textDate"
-        android:layout_width="225dp"
+        android:layout_width="125dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAlignment="textEnd"
         android:text="TextView" />
+
+    <ImageButton
+        android:id="@+id/button2"
+        android:layout_width="37dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_delete_24"
+        android:background="#FFFFFF"/>
+
 
 </LinearLayout>
